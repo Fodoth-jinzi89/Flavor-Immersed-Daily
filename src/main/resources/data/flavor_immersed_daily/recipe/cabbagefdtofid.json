@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "farmersdelight:cabbage"
+    }
+  },
+  "result": {
+    "id": "flavor_immersed_daily:cabbage",
+    "count": 2
+  }
+}

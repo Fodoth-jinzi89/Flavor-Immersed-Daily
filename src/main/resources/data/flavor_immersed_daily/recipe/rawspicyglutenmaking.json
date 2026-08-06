@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "item": "flavor_immersed_daily:cookingoil"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "flavor_immersed_daily:salt"
+    },
+    {
+      "item": "flavor_immersed_daily:chillipowder"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:rawspicygluten",
+    "count": 2
+  }
+}

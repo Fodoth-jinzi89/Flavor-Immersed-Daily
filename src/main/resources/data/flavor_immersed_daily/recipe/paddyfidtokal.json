@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "flavor_immersed_daily:paddyseeds"
+    }
+  },
+  "result": {
+    "id": "kaleidoscope_cookery:rice_panicle",
+    "count": 2
+  }
+}

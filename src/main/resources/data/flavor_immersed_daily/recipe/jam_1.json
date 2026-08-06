@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "forge:fruit_jam"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:multijam",
+    "count": 1
+  }
+}

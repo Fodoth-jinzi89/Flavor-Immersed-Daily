@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:oiledflourskin"
+    },
+    {
+      "item": "flavor_immersed_daily:sweeteggliquid"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:raweggtart",
+    "count": 1
+  }
+}

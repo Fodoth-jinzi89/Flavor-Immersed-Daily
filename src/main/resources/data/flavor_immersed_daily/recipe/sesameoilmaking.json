@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:majuice"
+    },
+    {
+      "item": "flavor_immersed_daily:coarsecloth"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:sesameoil",
+    "count": 1
+  }
+}

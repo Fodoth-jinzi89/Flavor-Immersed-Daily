@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:rawnoodles"
+    },
+    {
+      "item": "flavor_immersed_daily:cookingoil"
+    },
+    {
+      "item": "flavor_immersed_daily:chillipowder"
+    },
+    {
+      "item": "flavor_immersed_daily:salt"
+    },
+    {
+      "item": "minecraft:sugar"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:rawspicygluten",
+    "count": 2
+  }
+}

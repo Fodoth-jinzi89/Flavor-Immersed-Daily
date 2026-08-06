@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "flavor_immersed_daily:redrepper"
+    }
+  },
+  "result": {
+    "id": "kaleidoscope_cookery:red_chili",
+    "count": 2
+  }
+}

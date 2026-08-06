@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:gold_nugget"
+    },
+    {
+      "item": "flavor_immersed_daily:redlantern"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:goldlantern",
+    "count": 1
+  }
+}

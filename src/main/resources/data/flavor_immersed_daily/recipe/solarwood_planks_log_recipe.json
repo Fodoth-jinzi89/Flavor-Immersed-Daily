@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "planks",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:solarwood_log"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:solarwood_planks",
+    "count": 4
+  }
+}

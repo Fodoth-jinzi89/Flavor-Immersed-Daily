@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:cocoasauce"
+    },
+    {
+      "item": "flavor_immersed_daily:corn_0"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:chocolatecornkernels",
+    "count": 1
+  }
+}

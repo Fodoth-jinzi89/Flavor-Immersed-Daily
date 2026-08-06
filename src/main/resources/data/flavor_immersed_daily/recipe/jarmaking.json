@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:brick"
+    },
+    "b": {
+      "item": "flavor_immersed_daily:tidywater"
+    }
+  },
+  "result": {
+    "id": "fidworkblock:jar",
+    "count": 1
+  }
+}

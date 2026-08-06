@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:dicedtomato"
+    },
+    {
+      "item": "flavor_immersed_daily:dicedtomato"
+    },
+    {
+      "item": "minecraft:sugar"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:tomatosalad",
+    "count": 1
+  }
+}

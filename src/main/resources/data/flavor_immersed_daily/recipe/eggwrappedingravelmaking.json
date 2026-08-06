@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "forge:egg"
+    },
+    {
+      "item": "flavor_immersed_daily:gravelpaste"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:eggwrappedingravel",
+    "count": 1
+  }
+}

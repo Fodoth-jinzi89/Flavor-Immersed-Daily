@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item":  "casualnessdelight:capsicum"
+    }
+  },
+  "result": {
+    "id":"flavor_immersed_daily:redrepper",
+    "count": 2
+  }
+}

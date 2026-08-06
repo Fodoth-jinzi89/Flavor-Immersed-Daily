@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "planks",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:orchard_heartwood_log"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:orchard_heartwood_planks",
+    "count": 4
+  }
+}

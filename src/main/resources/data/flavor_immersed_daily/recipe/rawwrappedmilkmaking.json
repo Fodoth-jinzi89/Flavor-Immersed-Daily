@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:frozenmilk"
+    },
+    {
+      "item": "flavor_immersed_daily:panada"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:rawwrappedmilk",
+    "count": 1
+  }
+}

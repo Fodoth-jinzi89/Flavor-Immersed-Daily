@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:mulberryjam"
+    },
+    {
+      "item": "flavor_immersed_daily:cream"
+    },
+    {
+      "item": "flavor_immersed_daily:sorbet"
+    },
+    {
+      "item": "flavor_immersed_daily:eggpancake"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:mulberryicecream",
+    "count": 2
+  }
+}

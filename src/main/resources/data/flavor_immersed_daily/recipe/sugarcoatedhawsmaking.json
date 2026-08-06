@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:whitebrownsugarsyrup"
+    },
+    {
+      "item": "flavor_immersed_daily:cookedhawthorn"
+    },
+    {
+      "item": "flavor_immersed_daily:crystalsugar"
+    },
+    {
+      "item": "minecraft:stick"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:sugarcoatedhaws",
+    "count": 1
+  }
+}

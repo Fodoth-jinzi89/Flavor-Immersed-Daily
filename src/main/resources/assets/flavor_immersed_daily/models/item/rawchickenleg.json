@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "layer0": "flavor_immersed_daily:item/rawchickenleg"
+  },
+  "parent": "minecraft:item/generated"
+}

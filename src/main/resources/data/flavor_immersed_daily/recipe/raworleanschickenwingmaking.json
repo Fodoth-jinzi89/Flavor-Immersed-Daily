@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:orleanspowder"
+    },
+    {
+      "item": "flavor_immersed_daily:rawchickenwing"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:raworleanschickenwing",
+    "count": 1
+  }
+}

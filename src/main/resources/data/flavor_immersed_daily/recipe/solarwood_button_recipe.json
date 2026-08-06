@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "wooden_button",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:solarwood_planks"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:solarwood_button",
+    "count": 1
+  }
+}

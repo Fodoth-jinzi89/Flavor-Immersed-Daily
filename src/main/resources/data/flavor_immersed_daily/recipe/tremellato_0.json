@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:tremella"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:tremellaseed",
+    "count": 2
+  }
+}

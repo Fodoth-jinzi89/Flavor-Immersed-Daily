@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "experience": 1,
+  "cookingtime": 100,
+  "ingredient": {
+    "item": "flavor_immersed_daily:saltpiece"
+  },
+  "result": {
+    "id": "flavor_immersed_daily:salt"
+  }
+}

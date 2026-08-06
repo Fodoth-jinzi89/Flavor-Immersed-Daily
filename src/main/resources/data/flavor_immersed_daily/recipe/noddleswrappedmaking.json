@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:brownbrownsugarsyrup"
+    },
+    {
+      "item": "flavor_immersed_daily:rawnoodles"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:noodleswrappedinsyrup",
+    "count": 1
+  }
+}

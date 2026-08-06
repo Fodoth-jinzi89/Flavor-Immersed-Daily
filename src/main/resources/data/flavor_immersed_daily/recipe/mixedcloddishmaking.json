@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:shreddercucumber"
+    },
+    {
+      "item": "flavor_immersed_daily:shreddedcarrots"
+    },
+    {
+      "item": "flavor_immersed_daily:shredderradish"
+    },
+    {
+      "item": "flavor_immersed_daily:shreddedpotato_2"
+    },
+    {
+      "item": "flavor_immersed_daily:soy"
+    },
+    {
+      "item": "flavor_immersed_daily:vinegar"
+    },
+    {
+      "item": "flavor_immersed_daily:garlicpowder"
+    },
+    {
+      "item": "flavor_immersed_daily:sesameoil"
+    },
+    {
+      "item": "flavor_immersed_daily:chillipowder"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:mixedcolddishes",
+    "count": 1
+  }
+}

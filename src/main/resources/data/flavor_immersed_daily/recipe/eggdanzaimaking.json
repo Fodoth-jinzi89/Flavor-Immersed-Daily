@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "flavor_immersed_daily:eggbatter"
+    },
+    {
+      "item": "flavor_immersed_daily:eeggpuffsmould"
+    },
+    {
+      "item": "flavor_immersed_daily:cookingoil"
+    }
+  ],
+  "result": {
+    "id": "flavor_immersed_daily:eggpuffs",
+    "count": 1
+  }
+}
