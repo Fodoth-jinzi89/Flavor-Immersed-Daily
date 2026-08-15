@@ -5,7 +5,8 @@
     { "item": "minecraft:egg" }
   ],
   "results": [
-    { "id": "flavor_immersed_daily:eggliquid", "count": 1 }
+    { "id": "flavor_immersed_daily:eggliquid", "count": 1 },
+    { "id": "flavor_immersed_daily:eggshell", "count": 1 }
   ],
   "cookingTime": 60
 }
