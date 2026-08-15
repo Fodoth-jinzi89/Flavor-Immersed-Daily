@@ -15,11 +15,11 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * 对联文字渲染器 — 在方块表面渲染文字
- * 完全参照原版告示牌（AbstractSignRenderer.renderSignText）的标准做法：
- * 1. 以方块中心为原点，Y 轴旋转使文字朝向与模型 blockstate 的 y 值一致
- * 2. 沿表面法线做深度偏移（避免 z-fighting），不依赖 SEE_THROUGH
- * 3. 使用 NORMAL 深度测试（与模型同向显示、背面自然被方块遮挡，兼容各种渲染模组）
- * 4. 缩放采用原版 (scale, -scale, scale) 正 X 形式，杜绝负缩放导致的兼容性问题
+ * 参照原版告示牌（AbstractSignRenderer.renderSignText）的标准做法：
+ * 1. 以方块中心为原点，Y 轴旋转使文字与烘焙后的 blockstate 模型同向
+ * 2. 沿表面法线向玩家侧做深度偏移（避免 z-fighting），不依赖 SEE_THROUGH
+ * 3. 使用 NORMAL 深度测试，使背面文字自然被方块遮挡
+ * 4. 使用负 X、负 Y 缩放，让字体正面朝向模型可见面并保持文字方向正确
  * 横幅（antithetical_couplet_1）：1行文字从左到右横排
  * 竖联（antithetical_couplet_2）：文字从上到下竖排
  */
@@ -60,15 +60,14 @@ public class CoupletRenderer implements BlockEntityRenderer<CoupletBlockEntity> 
         // 1. 移动到方块中心（原版 translate(0, 0.5, 0.5) 的等价形式）
         poseStack.translate(0.5, 0.5, 0.5);
 
-        // 2. 旋转：与 blockstate 模型的 y 值完全一致（north=0, south=180, east=90, west=270），
-        //    保证文字与模型始终同向，杜绝"字跑到别处"
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotationFor(facing)));
+        // 2. blockstate 模型烘焙时会对 JSON 的 y 角取反，文字需使用相同方向
+        poseStack.mulPose(Axis.YP.rotationDegrees(-rotationFor(facing)));
 
-        // 3. 沿表面法线偏移到模型表面外侧（深度偏移，避免 z-fighting）
-        poseStack.translate(0.0F, 0.0F, CENTER_TO_SURFACE + DEPTH_OFFSET);
+        // 3. 从模型表面向玩家侧回退少量距离，避免文字进入支撑墙或发生 z-fighting
+        poseStack.translate(0.0F, 0.0F, CENTER_TO_SURFACE - DEPTH_OFFSET);
 
-        // 4. 缩放：原版 (scale, -scale, scale) 形式，X 正缩放保证字形方向正确
-        poseStack.scale(RENDER_SCALE, -RENDER_SCALE, RENDER_SCALE);
+        // 4. 负 X、负 Y 缩放使字形正面朝向红纸的可见面
+        poseStack.scale(-RENDER_SCALE, -RENDER_SCALE, RENDER_SCALE);
 
         if (isVertical) {
             // ---- 竖联：从上到下逐字排列 ----
@@ -113,8 +112,7 @@ public class CoupletRenderer implements BlockEntityRenderer<CoupletBlockEntity> 
     }
 
     /**
-     * 方块朝向对应的模型 y 旋转角（与 blockstate JSON 的 y 值保持一致）。
-     * 原版告示牌通过 facing.getOpposite().get2DDataValue() * 90 计算，此处直接给出等价映射。
+     * 方块朝向对应的 blockstate JSON y 旋转角；应用到 PoseStack 时需取反。
      */
     private static float rotationFor(Direction facing) {
         return switch (facing) {

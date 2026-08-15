@@ -72,7 +72,7 @@ public class CoupletEditScreen extends Screen {
                 final int idx = i;
                 editBox.setResponder(text -> {
                     if (text.length() >= 1 && idx < 3) {
-                        editBoxes[idx + 1].setFocused(true);
+                        CoupletEditScreen.this.setFocused(editBoxes[idx + 1]);
                     }
                 });
             }
@@ -107,8 +107,8 @@ public class CoupletEditScreen extends Screen {
                 .build();
         this.addRenderableWidget(confirmButton);
 
-        // 默认聚焦第一个输入框
-        editBoxes[0].setFocused(true);
+        // 通过 Screen 设置真实的唯一焦点，确保打开界面后可直接输入
+        this.setInitialFocus(editBoxes[0]);
     }
 
     @Override
@@ -157,10 +157,7 @@ public class CoupletEditScreen extends Screen {
 
     @Override
     public void onClose() {
-        // 恢复输入框焦点状态
-        for (EditBox box : editBoxes) {
-            box.setFocused(false);
-        }
+        this.setFocused(null);
         super.onClose();
     }
 }

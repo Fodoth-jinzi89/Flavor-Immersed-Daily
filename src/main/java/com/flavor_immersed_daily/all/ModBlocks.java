@@ -1283,7 +1283,8 @@ public static final DeferredItem<BlockItem> COCONUTJUICE = BLOCK_ITEMS.register(
                     BANANAWOOD, BANANA))
             .setData(ProviderType.BLOCKSTATE, (ctx, provider) -> {})
             .item()
-            .model((ctx, provider) -> provider.withExistingParent(ctx.getName(), provider.modLoc("block/rawbanana_stage0")))
+            .model((ctx, provider) -> provider.withExistingParent(ctx.getName(),
+                    provider.modLoc("block/rawbanana_stage1")))
             .build()
             .register();
 
@@ -1294,6 +1295,8 @@ public static final DeferredItem<BlockItem> COCONUTJUICE = BLOCK_ITEMS.register(
                     BANANAWOOD, RAWBANANA))
             .item((block, properties) -> new TooltipBlockItem(block, properties,
                     Component.translatable("tooltip.flavor_immersed_daily.sapling_harvest"), java.util.List::of))
+            .model((ctx, provider) -> provider.withExistingParent(ctx.getName(), "item/generated")
+                    .texture("layer0", provider.modLoc("item/" + ctx.getName())))
             .build()
             .register();
 
@@ -1316,6 +1319,8 @@ public static final DeferredItem<BlockItem> COCONUTJUICE = BLOCK_ITEMS.register(
                     CINNAMONWOOD, CINNAMONLEAVES))
             .item((block, itemProperties) -> new TooltipBlockItem(block, itemProperties,
                     Component.translatable("tooltip.flavor_immersed_daily.sapling_harvest"), java.util.List::of))
+            .model((ctx, provider) -> provider.withExistingParent(ctx.getName(), "item/generated")
+                    .texture("layer0", provider.modLoc("item/" + ctx.getName())))
             .build()
             .register();
 
@@ -1385,6 +1390,8 @@ public static final DeferredItem<BlockItem> COCONUTJUICE = BLOCK_ITEMS.register(
             .setData(ProviderType.BLOCKSTATE, (ctx, provider) -> {})
             .item((block, itemProperties) -> new TooltipBlockItem(block, itemProperties,
                     Component.translatable("tooltip.flavor_immersed_daily.sapling_harvest"), java.util.List::of))
+            .model((ctx, provider) -> provider.withExistingParent(ctx.getName(), "item/generated")
+                    .texture("layer0", provider.modLoc("item/" + ctx.getName())))
             .build()
             .register();
 
@@ -1434,6 +1441,8 @@ public static final DeferredItem<BlockItem> COCONUTJUICE = BLOCK_ITEMS.register(
             .setData(ProviderType.BLOCKSTATE, (ctx, provider) -> {})
             .item((block, itemProperties) -> new TooltipBlockItem(block, itemProperties,
                     Component.translatable("tooltip.flavor_immersed_daily.sapling_harvest"), java.util.List::of))
+            .model((ctx, provider) -> provider.withExistingParent(ctx.getName(), "item/generated")
+                    .texture("layer0", provider.modLoc("item/" + ctx.getName())))
             .build()
             .register();
 
@@ -1530,6 +1539,8 @@ public static final DeferredItem<BlockItem> COCONUTJUICE = BLOCK_ITEMS.register(
                 .setData(ProviderType.BLOCKSTATE, (ctx, provider) -> {})
                 .item((block, itemProperties) -> new TooltipBlockItem(block, itemProperties,
                         Component.translatable("tooltip.flavor_immersed_daily.sapling_harvest"), java.util.List::of))
+                .model((ctx, provider) -> provider.withExistingParent(ctx.getName(), "item/generated")
+                        .texture("layer0", provider.modLoc("item/" + ctx.getName())))
                 .build()
                 .register();
     }
@@ -1636,6 +1647,8 @@ public static final DeferredItem<BlockItem> COCONUTJUICE = BLOCK_ITEMS.register(
             .setData(ProviderType.BLOCKSTATE, (ctx, provider) -> {})
             .item((block, itemProperties) -> new TooltipBlockItem(block, itemProperties,
                     Component.translatable("tooltip.flavor_immersed_daily.sapling_harvest"), java.util.List::of))
+            .model((ctx, provider) -> provider.withExistingParent(ctx.getName(), "item/generated")
+                    .texture("layer0", provider.modLoc("item/" + ctx.getName())))
             .build()
             .register();
 

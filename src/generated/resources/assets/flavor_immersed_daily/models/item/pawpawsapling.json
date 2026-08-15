@@ -1,3 +1,6 @@
 {
-  "parent": "flavor_immersed_daily:block/pawpawsapling"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "flavor_immersed_daily:item/pawpawsapling"
+  }
 }
