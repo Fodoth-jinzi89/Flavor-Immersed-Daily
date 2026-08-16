@@ -18,6 +18,18 @@ public class Config {
     public static final ModConfigSpec.IntValue MAX_FRUITS_PER_CHUNK = BUILDER
             .comment("每个区块内最多同时存在的果实实体数量（包括所有种类的水果）")
             .defineInRange("maxFruitsPerChunk", 5, 1, 100);
+    public static final ModConfigSpec.DoubleValue NATURAL_FRUIT_MATURITY_CHANCE = BUILDER
+            .comment("结果叶每次随机刻推进一阶段成熟进度的概率（0.0-1.0），默认 0.33")
+            .defineInRange("naturalFruitMaturityChance", 0.33, 0.0, 1.0);
+    public static final ModConfigSpec.DoubleValue BONE_MEAL_FRUIT_MATURITY_CHANCE = BUILDER
+            .comment("每次使用骨粉推进一阶段成熟进度的概率（0.0-1.0），默认 0.35")
+            .defineInRange("boneMealFruitMaturityChance", 0.35, 0.0, 1.0);
+    public static final ModConfigSpec.DoubleValue HANGING_FRUIT_CHANCE = BUILDER
+            .comment("结果叶成熟时额外生成悬挂果实方块的概率（0.0-1.0），默认 0.70")
+            .defineInRange("hangingFruitChance", 0.70, 0.0, 1.0);
+    public static final ModConfigSpec.DoubleValue FALLING_FRUIT_CHANCE = BUILDER
+            .comment("悬挂果实生成或失去支撑时转为掉落果实实体的概率（0.0-1.0），默认 0.30")
+            .defineInRange("fallingFruitChance", 0.30, 0.0, 1.0);
 
     //香油滑步效果配置
     public static final ModConfigSpec.BooleanValue SESAME_SLIP_ENABLED = BUILDER
@@ -205,6 +217,10 @@ public class Config {
 
     // 运行时缓存
     public static int maxFruitsPerChunk = 5;
+    public static double naturalFruitMaturityChance = 0.33;
+    public static double boneMealFruitMaturityChance = 0.35;
+    public static double hangingFruitChance = 0.70;
+    public static double fallingFruitChance = 0.30;
     public static boolean sesameSlipEnabled = true;
     public static double sesameSlipHeight = 2.1;
     public static boolean aceticErosionEnabled = true;
@@ -237,6 +253,10 @@ public class Config {
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
         maxFruitsPerChunk = MAX_FRUITS_PER_CHUNK.get();
+        naturalFruitMaturityChance = NATURAL_FRUIT_MATURITY_CHANCE.get();
+        boneMealFruitMaturityChance = BONE_MEAL_FRUIT_MATURITY_CHANCE.get();
+        hangingFruitChance = HANGING_FRUIT_CHANCE.get();
+        fallingFruitChance = FALLING_FRUIT_CHANCE.get();
         sesameSlipEnabled = SESAME_SLIP_ENABLED.get();
         sesameSlipHeight = SESAME_SLIP_HEIGHT.get();
         aceticErosionEnabled = ACETIC_EROSION_ENABLED.get();

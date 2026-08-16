@@ -13,12 +13,10 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -75,6 +73,7 @@ public class FallingFruitEntity extends Entity {
             SynchedEntityData.defineId(FallingFruitEntity.class, EntityDataSerializers.STRING);
 
     private int age = 0;
+    private boolean settled = false;
 
     public FallingFruitEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -140,43 +139,26 @@ public class FallingFruitEntity extends Entity {
         
         // 添加重力效果
         if (!this.level().isClientSide) {
-            // 应用重力 - 垂直方向速度增加 (模拟重力加速度)
-            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
-            
-            // 应用空气阻力
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.98, 0.98, 0.98));
-            
-            // 移动实体
-            this.move(MoverType.SELF, this.getDeltaMovement());
-            
-            // 检查是否落地
-            if (this.onGround()) {
-                // 如果已经着地，则停止垂直移动
-                convertToItemEntity();
-                return;
-                
-                // 可以在这里添加着地音效或其他逻辑
-                //饿啊，但是这部分有一直频繁播放的bug，所以我没弄
-                // this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
-               //         SoundEvents.SAND_PLACE, SoundSource.BLOCKS, 0.3F, 1.0F);
+            if (!this.settled) {
+                // 下落期间保持完整挂果方块的实体渲染，触地后停留在地面上。
+                this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
+                this.setDeltaMovement(this.getDeltaMovement().multiply(0.98, 0.98, 0.98));
+                this.move(MoverType.SELF, this.getDeltaMovement());
+
+                if (this.onGround()) {
+                    this.settled = true;
+                    this.setDeltaMovement(0, 0, 0);
+                    this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
+                            SoundEvents.SAND_PLACE, SoundSource.BLOCKS, 0.3F, 1.0F);
+                }
             }
-            
+
             age++;
             // 5分钟后自动消失 (6000 ticks)
             if (age > 6000) {
-                convertToItemEntity();
+                this.discard();
             }
         }
-    }
-
-    private void convertToItemEntity() {
-        ItemStack drop = getDropItem();
-        if (!drop.isEmpty()) {
-            ItemEntity itemEntity = new ItemEntity(this.level(), getX(), getY(), getZ(), drop.copy());
-            itemEntity.setDeltaMovement(0, 0, 0);
-            this.level().addFreshEntity(itemEntity);
-        }
-        this.discard();
     }
 
     @Override
@@ -186,7 +168,11 @@ public class FallingFruitEntity extends Entity {
         }
         ItemStack drop = getDropItem();
         if (!drop.isEmpty()) {
-            Block.popResource(this.level(), this.blockPosition(), drop.copy());
+            ItemStack remaining = drop.copy();
+            player.getInventory().add(remaining);
+            if (!remaining.isEmpty()) {
+                player.drop(remaining, false);
+            }
         }
         this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
                 SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -209,6 +195,7 @@ public class FallingFruitEntity extends Entity {
         if (tag.contains("Age")) {
             this.age = tag.getInt("Age");
         }
+        this.settled = tag.getBoolean("Settled");
         // 读取实体尺寸数据
         if (tag.contains("Width")) {
             this.entityData.set(DATA_WIDTH, tag.getFloat("Width"));
@@ -231,6 +218,7 @@ public class FallingFruitEntity extends Entity {
             tag.put("DropItem", itemTag);
         }
         tag.putInt("Age", this.age);
+        tag.putBoolean("Settled", this.settled);
         // 保存实体尺寸数据
         tag.putFloat("Width", getCustomWidth());
         tag.putFloat("Height", getCustomHeight());

@@ -295,6 +295,7 @@
   "block.flavor_immersed_daily.woodbasin": "Woodbasin",
   "block.flavor_immersed_daily.zucchiniseed": "Zucchiniseed",
   "block.flavor_immersed_daily.zucchinisnackmeat": "Zucchinisnackmeat",
+  "entity.flavor_immersed_daily.falling_fruit": "Falling Fruit",
   "effect.flavor_immersed_daily.acetic_erosion": "Acetic Erosion",
   "effect.flavor_immersed_daily.acetic_erosion.description": "Melee attacks deal 1 extra durability damage to each piece of the target's armor.",
   "effect.flavor_immersed_daily.bean_fury": "Bean Fury",
@@ -1291,5 +1292,18 @@
   "tooltip.flavor_immersed_daily.throwable_fruit.desc1": "Sneak-right-click to throw. Drops materials on impact.",
   "tooltip.flavor_immersed_daily.wild_crop_harvest": "Obtained by breaking grass with scissors. Use on an agricultural appraisal machine to identify it.",
   "tooltip.flavor_immersed_daily.wild_fruit_harvest": "Obtained by breaking leaves with scissors. Use on an agricultural appraisal machine to identify it.",
-  "tooltip.flavor_immersed_daily.windowpaper": "Right-click a wall to place window paper. It is transparent when put away and can be cut into any shape."
+  "tooltip.flavor_immersed_daily.windowpaper": "Right-click a wall to place window paper. It is transparent when put away and can be cut into any shape.",
+  "emi.category.flavor_immersed_daily.wood_basin": "Wood Basin",
+  "emi.category.flavor_immersed_daily.egg_breaking": "Egg Breaking Machine",
+  "emi.category.flavor_immersed_daily.fridge_tempering": "Fridge - Tempering",
+  "emi.category.flavor_immersed_daily.fridge_freezing": "Fridge - Freezing",
+  "emi.flavor_immersed_daily.time": "%s s",
+  "jade.flavor_immersed_daily.contents": "Contents",
+  "jade.flavor_immersed_daily.progress": "Processing: %s%%",
+  "jade.flavor_immersed_daily.tempering": "Tempering: %s%%",
+  "jade.flavor_immersed_daily.freezing": "Freezing: %s%%",
+  "jade.flavor_immersed_daily.growth": "Growth: %s%%",
+  "jade.flavor_immersed_daily.growing": "Growing",
+  "jade.flavor_immersed_daily.mature": "Mature",
+  "jade.flavor_immersed_daily.fruit_maturity": "Maturity: %s%%"
 }

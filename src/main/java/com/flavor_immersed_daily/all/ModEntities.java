@@ -21,7 +21,7 @@ public final class ModEntities {
             REGISTRY.register("falling_fruit", () -> EntityType.Builder.of(FallingFruitEntity::new, MobCategory.MISC)
                     .sized(0.5f, 0.5f)
                     .clientTrackingRange(10)
-                    .updateInterval(20)
+                    .updateInterval(1)
                     .build("falling_fruit"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<SeatEntity>> SEAT_ENTITY =

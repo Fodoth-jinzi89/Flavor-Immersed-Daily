@@ -1,6 +1,7 @@
 package com.flavor_immersed_daily;
 
 import com.flavor_immersed_daily.config.Config;
+import com.flavor_immersed_daily.command.FidDebugCommands;
 import com.flavor_immersed_daily.network.ModPayloads;
 import com.flavor_immersed_daily.all.ModCreateTab;
 import com.flavor_immersed_daily.all.ModItems;
@@ -38,6 +39,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 @Mod(FlavorImmersedDaily.MODID)
@@ -76,6 +78,11 @@ public class FlavorImmersedDaily {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         LOGGER.info("Flavor Immersed Daily server starting");
+    }
+
+    @SubscribeEvent
+    public void onRegisterCommands(RegisterCommandsEvent event) {
+        FidDebugCommands.register(event.getDispatcher());
     }
 
     @SubscribeEvent

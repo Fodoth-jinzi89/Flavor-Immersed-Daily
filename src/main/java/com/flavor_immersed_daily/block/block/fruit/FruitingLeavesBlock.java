@@ -1,5 +1,6 @@
 package com.flavor_immersed_daily.block.block.fruit;
 
+import com.flavor_immersed_daily.config.Config;
 import com.flavor_immersed_daily.gameplay.FruitHarvestHandler;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -28,6 +30,8 @@ import java.util.function.Supplier;
 
 public class FruitingLeavesBlock extends LeavesBlock {
     public static final BooleanProperty FRUITING = BooleanProperty.create("fruiting");
+    public static final IntegerProperty MATURITY = IntegerProperty.create("maturity", 0, 4);
+    public static final int MAX_MATURITY = 4;
     private static final int LEGACY_HANGING_FRUIT_SEARCH_DEPTH = 12;
 
     private final Supplier<Item> fruitItem;
@@ -50,7 +54,8 @@ public class FruitingLeavesBlock extends LeavesBlock {
                 .setValue(DISTANCE, 1)
                 .setValue(PERSISTENT, false)
                 .setValue(WATERLOGGED, false)
-                .setValue(FRUITING, false));
+                .setValue(FRUITING, false)
+                .setValue(MATURITY, 0));
     }
 
     @Override
@@ -60,7 +65,7 @@ public class FruitingLeavesBlock extends LeavesBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(DISTANCE, PERSISTENT, WATERLOGGED, FRUITING);
+        builder.add(DISTANCE, PERSISTENT, WATERLOGGED, FRUITING, MATURITY);
     }
 
     @Override
@@ -75,26 +80,34 @@ public class FruitingLeavesBlock extends LeavesBlock {
         BlockState currentState = level.getBlockState(pos);
         if (currentState.is(this)
                 && !currentState.getValue(FRUITING)
-                && !currentState.getValue(PERSISTENT)
-                && random.nextInt(3) == 0) {
-            growFruit(level, pos, currentState);
+                && !currentState.getValue(PERSISTENT)) {
+            tryMatureFruit(level, pos, currentState, random, Config.naturalFruitMaturityChance);
         }
     }
 
-    private void growFruit(ServerLevel level, BlockPos pos, BlockState state) {
-        if (hangingFruit == null || trySpawnHangingFruit(level, pos)) {
-            level.setBlock(pos, state.setValue(FRUITING, true), 3);
+    private boolean tryMatureFruit(ServerLevel level, BlockPos pos, BlockState state, RandomSource random,
+                                   double maturityChance) {
+        if (random.nextDouble() >= maturityChance) return false;
+
+        int maturity = Math.min(MAX_MATURITY, state.getValue(MATURITY) + 1);
+        BlockState maturedState = state.setValue(MATURITY, maturity);
+        if (maturity < MAX_MATURITY) {
+            level.setBlock(pos, maturedState, 3);
+            return true;
         }
+
+        level.setBlock(pos, maturedState.setValue(FRUITING, true), 3);
+        if (hangingFruit != null && random.nextDouble() < Config.hangingFruitChance) {
+            trySpawnHangingFruit(level, pos);
+        }
+        return true;
     }
 
-    private boolean trySpawnHangingFruit(ServerLevel level, BlockPos pos) {
-        if (hangingFruit == null) return true;
-
+    private void trySpawnHangingFruit(ServerLevel level, BlockPos pos) {
         BlockPos targetPos = pos.below();
-        if (!level.getBlockState(targetPos).isAir()) return false;
+        if (!level.getBlockState(targetPos).isAir()) return;
 
         level.setBlock(targetPos, hangingFruit.get().defaultBlockState(), 3);
-        return level.getBlockState(targetPos).is(hangingFruit.get());
     }
 
     private BlockPos findHangingFruit(Level level, BlockPos leafPos) {
@@ -121,7 +134,7 @@ public class FruitingLeavesBlock extends LeavesBlock {
             level.removeBlock(hangingFruitPos, false);
         }
         popResource(level, pos, new ItemStack(fruitItem.get()));
-        level.setBlock(pos, state.setValue(FRUITING, false), 3);
+        level.setBlock(pos, state.setValue(FRUITING, false).setValue(MATURITY, 0), 3);
         FruitHarvestHandler.tryDropVariantFruit(level, pos, this);
         return true;
     }
@@ -132,10 +145,9 @@ public class FruitingLeavesBlock extends LeavesBlock {
                                               BlockHitResult hitResult) {
         if (stack.is(Items.BONE_MEAL) && !state.getValue(FRUITING)) {
             if (level instanceof ServerLevel serverLevel) {
-                growFruit(serverLevel, pos, state);
-                if (serverLevel.getBlockState(pos).getValue(FRUITING)) {
-                    stack.consume(1, player);
-                }
+                tryMatureFruit(serverLevel, pos, state, serverLevel.random,
+                        Config.boneMealFruitMaturityChance);
+                stack.consume(1, player);
             }
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }

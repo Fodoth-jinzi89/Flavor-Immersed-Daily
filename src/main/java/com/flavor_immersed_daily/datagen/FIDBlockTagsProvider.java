@@ -39,6 +39,9 @@ public final class FIDBlockTagsProvider extends BlockTagsProvider {
         addSemanticTags(ModBlocks.CINNAMONWOOD.get());
         addSemanticTags(ModBlocks.SOLARWOOD_LOG.get());
         addSemanticTags(ModBlocks.ORCHARD_HEARTWOOD_LOG.get());
+        addSemanticTags(ModBlocks.VERDANT_GRACE_LOG.get());
+        addSemanticTags(ModBlocks.STONEBARK_LOG.get());
+        addSemanticTags(ModBlocks.VINEHEART_TIMBER_LOG.get());
     }
 
     private void addSemanticTags(Block block) {
