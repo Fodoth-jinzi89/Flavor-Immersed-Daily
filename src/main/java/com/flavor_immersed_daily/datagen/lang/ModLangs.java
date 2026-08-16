@@ -14,13 +14,19 @@ public final class ModLangs {
         ModItems.REGISTRY.getEntries().forEach(entry -> provider.addItem(() -> entry.get()));
         ModBlocks.REGISTRY.getEntries().forEach(entry -> provider.addBlock(() -> entry.get()));
         addCreativeTabs(provider);
+        addEntities(provider);
         addEffects(provider);
         addConfiguration(provider);
         addTooltips(provider);
         addJei(provider);
+        addIntegrations(provider);
         addGui(provider);
         provider.add("screen.flavor_immersed_daily.firecracker", "Firecracker Config");
         provider.add("subtitles.flavor_immersed_daily.manbaout", "Manba punch");
+    }
+
+    private static void addEntities(RegistrateLangProvider provider) {
+        provider.add("entity.flavor_immersed_daily.falling_fruit", "Falling Fruit");
     }
 
     private static void addCreativeTabs(RegistrateLangProvider provider) {
@@ -120,6 +126,22 @@ public final class ModLangs {
         provider.add("jei.flavor_immersed_daily.egg_breaking", "Egg Breaking Machine");
         provider.add("jei.flavor_immersed_daily.shaped", "Shaped");
         provider.add("jei.flavor_immersed_daily.shapeless", "Shapeless");
+    }
+
+    private static void addIntegrations(RegistrateLangProvider provider) {
+        provider.add("emi.category.flavor_immersed_daily.wood_basin", "Wood Basin");
+        provider.add("emi.category.flavor_immersed_daily.egg_breaking", "Egg Breaking Machine");
+        provider.add("emi.category.flavor_immersed_daily.fridge_tempering", "Fridge - Tempering");
+        provider.add("emi.category.flavor_immersed_daily.fridge_freezing", "Fridge - Freezing");
+        provider.add("emi.flavor_immersed_daily.time", "%s s");
+        provider.add("jade.flavor_immersed_daily.contents", "Contents");
+        provider.add("jade.flavor_immersed_daily.progress", "Processing: %s%%");
+        provider.add("jade.flavor_immersed_daily.tempering", "Tempering: %s%%");
+        provider.add("jade.flavor_immersed_daily.freezing", "Freezing: %s%%");
+        provider.add("jade.flavor_immersed_daily.growth", "Growth: %s%%");
+        provider.add("jade.flavor_immersed_daily.growing", "Growing");
+        provider.add("jade.flavor_immersed_daily.mature", "Mature");
+        provider.add("jade.flavor_immersed_daily.fruit_maturity", "Maturity: %s%%");
     }
 
     private static void addGui(RegistrateLangProvider provider) {

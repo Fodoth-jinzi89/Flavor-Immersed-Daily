@@ -48,7 +48,8 @@ public class FallingFruitBlock extends Block {
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
-            if (serverLevel.random.nextFloat() < 0.3f && countFruitEntitiesInChunk(serverLevel, pos) < Config.maxFruitsPerChunk) {
+            if (serverLevel.random.nextDouble() < Config.fallingFruitChance
+                    && countFruitEntitiesInChunk(serverLevel, pos) < Config.maxFruitsPerChunk) {
                 clearSupportingLeaf(serverLevel, pos);
                 level.removeBlock(pos, false);
                 spawnFallingFruit(serverLevel, pos, state);
@@ -92,7 +93,8 @@ public class FallingFruitBlock extends Block {
     }
 
     private void tryDropFruit(BlockState blockState, ServerLevel level, BlockPos pos, RandomSource random) {
-        if (random.nextFloat() < 0.3f && countFruitEntitiesInChunk(level, pos) < Config.maxFruitsPerChunk) {
+        if (random.nextDouble() < Config.fallingFruitChance
+                && countFruitEntitiesInChunk(level, pos) < Config.maxFruitsPerChunk) {
             spawnFallingFruit(level, pos, blockState);
         } else {
             popResource(level, pos, new ItemStack(fruitItem.get()));
@@ -108,6 +110,15 @@ public class FallingFruitBlock extends Block {
         if (level.addFreshEntity(entity)) {
             incrementCachedFruitCount(level, pos);
         }
+    }
+
+    public boolean forceDrop(ServerLevel level, BlockPos pos, BlockState state) {
+        if (!state.is(this)) return false;
+
+        clearSupportingLeaf(level, pos);
+        level.removeBlock(pos, false);
+        spawnFallingFruit(level, pos, state);
+        return true;
     }
 
     public boolean harvestFruit(ServerLevel level, BlockPos pos) {
@@ -129,7 +140,8 @@ public class FallingFruitBlock extends Block {
             if (state.getBlock() instanceof FruitingLeavesBlock leavesBlock
                     && leavesBlock.getFruitItem() == fruitItem.get()
                     && state.getValue(FruitingLeavesBlock.FRUITING)) {
-                level.setBlock(mutable, state.setValue(FruitingLeavesBlock.FRUITING, false), 3);
+                level.setBlock(mutable, state.setValue(FruitingLeavesBlock.FRUITING, false)
+                        .setValue(FruitingLeavesBlock.MATURITY, 0), 3);
                 return leavesBlock;
             }
             if (!(state.getBlock() instanceof LeavesBlock)) return null;

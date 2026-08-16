@@ -47,6 +47,14 @@ public class EggBreakingMachineBlockEntity extends BlockEntity {
         return inventory;
     }
 
+    public int getProgress() {
+        return progress;
+    }
+
+    public int getTotalTime() {
+        return totalTime;
+    }
+
     /**
      * 计算库存中能凑出多少组完整的配方
      */

@@ -3,6 +3,7 @@
   "itemGroup.flavor_immersed_daily.food": "烟火凡人心：食物",
   "itemGroup.flavor_immersed_daily.ingredient": "烟火凡人心：烹饪材料",
   "itemGroup.flavor_immersed_daily.fi_dtools": "烟火凡人心：工具",
+  "entity.flavor_immersed_daily.falling_fruit": "落果",
   "item.flavor_immersed_daily.sharpknife": "切割刀",
   "item.flavor_immersed_daily.wideedgedknife": "宽刃刀",
   "item.flavor_immersed_daily.bonecutterknife": "斩骨刀",
@@ -1553,5 +1554,18 @@
   "gui.flavor_immersed_daily.firecracker.fade_color": "渐变色: %s",
   "gui.flavor_immersed_daily.firecracker.done": "完成",
   "tooltip.flavor_immersed_daily.sapling_harvest": "§e果树成熟后，使用木棍右键树干可以震落树上的果子",
-  "tooltip.flavor_immersed_daily.agriculturalappraisalmachine": "§e手持野生作物直接右键即可"
+  "tooltip.flavor_immersed_daily.agriculturalappraisalmachine": "§e手持野生作物直接右键即可",
+  "emi.category.flavor_immersed_daily.wood_basin": "木盆",
+  "emi.category.flavor_immersed_daily.egg_breaking": "打蛋机",
+  "emi.category.flavor_immersed_daily.fridge_tempering": "冰箱·变温室",
+  "emi.category.flavor_immersed_daily.fridge_freezing": "冰箱·冷冻室",
+  "emi.flavor_immersed_daily.time": "%s 秒",
+  "jade.flavor_immersed_daily.contents": "内容物",
+  "jade.flavor_immersed_daily.progress": "加工进度：%s%%",
+  "jade.flavor_immersed_daily.tempering": "变温进度：%s%%",
+  "jade.flavor_immersed_daily.freezing": "冷冻进度：%s%%",
+  "jade.flavor_immersed_daily.growth": "生长进度：%s%%",
+  "jade.flavor_immersed_daily.growing": "生长中",
+  "jade.flavor_immersed_daily.mature": "已成熟",
+  "jade.flavor_immersed_daily.fruit_maturity": "成熟进度：%s%%"
 }
