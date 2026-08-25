@@ -26,6 +26,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.function.Supplier;
@@ -46,8 +47,8 @@ public class FIDWaterCropBlock extends Block implements BonemealableBlock, Simpl
             Block.box(1, 0, 1, 15, 16, 15),
     };
 
-    /** 成熟后的点击体积：延伸到上方一格，方便玩家摘取。 */
-    private static final VoxelShape MATURE_SHAPE = Block.box(1, 0, 1, 15, 32, 15);
+    /** 成熟后的渲染/交互体积：限定在本格内一格高（y0~16），不延伸到上方格。 */
+    private static final VoxelShape MATURE_SHAPE = Block.box(1, 0, 1, 15, 16, 15);
 
     private final int maxAge;
     private final Supplier<? extends ItemLike> seedSupplier;
@@ -116,13 +117,25 @@ public class FIDWaterCropBlock extends Block implements BonemealableBlock, Simpl
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        int age = state.getValue(AGE);
-        return age >= maxAge ? MATURE_SHAPE : SHAPES[Math.min(age, SHAPES.length - 1)];
+        return getInteractionShape(state, level, pos);
     }
 
+    /**
+     * 水生作物不可阻挡，玩家可自由穿过（无碰撞箱）。
+     */
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPES[Math.min(state.getValue(AGE), SHAPES.length - 1)];
+        return Shapes.empty();
+    }
+
+    /**
+     * 渲染/交互/点击体积统一为一格（y0~16），与逻辑格一致：
+     * 指示箱不会再显示两格，点击本格内即可稳定收获。
+     */
+    @Override
+    public VoxelShape getInteractionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        int age = state.getValue(AGE);
+        return age >= maxAge ? MATURE_SHAPE : SHAPES[Math.min(age, SHAPES.length - 1)];
     }
 
     @Override
@@ -144,19 +157,20 @@ public class FIDWaterCropBlock extends Block implements BonemealableBlock, Simpl
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hitResult) {
         if (state.getValue(AGE) >= maxAge) {
-            ItemLike crop = cropSupplier.get();
-            if (crop != null) {
+            if (!level.isClientSide) {
                 // 右键收获：一次掉落 3 个作物 + 1 个种子
-                Block.popResource(level, pos, new ItemStack(crop, 3));
-                // Also drop some seeds
+                ItemLike crop = cropSupplier.get();
+                if (crop != null) {
+                    Block.popResource(level, pos, new ItemStack(crop, 3));
+                }
                 ItemLike seed = seedSupplier.get();
                 if (seed != null) {
                     Block.popResource(level, pos, new ItemStack(seed));
                 }
+                level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        SoundEvents.CROP_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
+                level.setBlock(pos, state.setValue(AGE, 0), Block.UPDATE_CLIENTS);
             }
-            level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                    SoundEvents.CROP_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
-            level.setBlock(pos, state.setValue(AGE, 0), Block.UPDATE_CLIENTS);
             return InteractionResult.SUCCESS;
         }
         return super.useWithoutItem(state, level, pos, player, hitResult);

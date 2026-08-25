@@ -132,6 +132,10 @@ neoForge {
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             logLevel = org.slf4j.event.Level.DEBUG
+
+            // 注意：不在此处硬编码 -Xmx 内存。本机物理内存只有 16G 且常驻进程较多，
+            // 固定 4G 堆会导致 JVM 无法保留堆空间而启动失败（退出码 1）。
+            // 使用 devlaunch 默认内存配置，避免挤爆系统内存。
         }
     }
 

@@ -5,6 +5,7 @@ import com.flavor_immersed_daily.all.ModBlocks;
 
 import com.flavor_immersed_daily.config.Config;
 import com.flavor_immersed_daily.FlavorImmersedDaily;
+import com.flavor_immersed_daily.integration.ButcheringSteps;
 import com.flavor_immersed_daily.recipe.EggBreakingRecipe;
 import com.flavor_immersed_daily.recipe.FridgeTemperingRecipe;
 import com.flavor_immersed_daily.recipe.FridgeFreezingRecipe;
@@ -46,36 +47,14 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         List<ButcheringRecipe> recipes = new ArrayList<>();
-
-        // 牛
-        addRecipes(recipes, ModItems.DEADCATTLE.get(), 1,
-                new Item[]{ModItems.WIDEEDGEDKNIFE.get(), ModItems.SHARPKNIFE.get(),
-                        ModItems.BONECUTTERKNIFE.get(), ModItems.SHARPKNIFE.get(),
-                        ModItems.SHARPKNIFE.get()},
-                new String[]{"放血", "剥皮", "剔骨", "掏空", "切肉"});
-
-        // 羊
-        addRecipes(recipes, ModItems.DEADSHEEP.get(), 2,
-                new Item[]{ModItems.WIDEEDGEDKNIFE.get(), ModItems.SHARPKNIFE.get(),
-                        ModItems.BONECUTTERKNIFE.get(), ModItems.SHARPKNIFE.get(),
-                        ModItems.SHARPKNIFE.get()},
-                new String[]{"放血", "剥皮", "剔骨", "掏空", "切肉"});
-
-        // 猪
-        addRecipes(recipes, ModItems.DEADPIG.get(), 3,
-                new Item[]{ModItems.WIDEEDGEDKNIFE.get(), ModItems.SHARPKNIFE.get(),
-                        ModItems.BONECUTTERKNIFE.get(), ModItems.SHARPKNIFE.get(),
-                        ModItems.SHARPKNIFE.get()},
-                new String[]{"放血", "剥皮", "剔骨", "掏空", "切肉"});
-
-        // 鸡（特殊流程）
-        addDropRecipe(recipes, ModItems.DEADCHICKEN.get(), 4, 1,
-                ModItems.WIDEEDGEDKNIFE.get(), "放血");
-        addDropRecipe(recipes, ModItems.CHICKENWITHOUTFEATHER.get(), 4, 5,
-                ModItems.SHARPKNIFE.get(), "掏空");
-        addDropRecipe(recipes, ModItems.DEADCHICKEN.get(), 4, 6,
-                ModItems.SHARPKNIFE.get(), "切割");
-
+        for (ButcheringSteps.Step step : ButcheringSteps.all()) {
+            List<ItemStack> outputs = buildOutputs(step.animalType(), step.stage());
+            if (outputs.isEmpty()) {
+                continue;
+            }
+            recipes.add(new ButcheringRecipe(new ItemStack(step.input()), new ItemStack(step.tool()),
+                    step.stageName(), outputs));
+        }
         registration.addRecipes(ButcheringRecipeCategory.TYPE, recipes);
 
         // ===== 木盆信息页 =====
@@ -164,32 +143,6 @@ public class JEIPlugin implements IModPlugin {
                 recipes.add(r);
             }
         }
-    }
-
-    private void addRecipes(List<ButcheringRecipe> recipes, Item input, int animalType,
-                            Item[] tools, String[] stageNames) {
-        for (int stage = 1; stage <= 5; stage++) {
-            List<ItemStack> outputs = buildOutputs(animalType, stage);
-            if (outputs.isEmpty()) continue;
-            recipes.add(new ButcheringRecipe(
-                    new ItemStack(input),
-                    new ItemStack(tools[stage - 1]),
-                    stageNames[stage - 1],
-                    outputs
-            ));
-        }
-    }
-
-    private void addDropRecipe(List<ButcheringRecipe> recipes, Item input, int animalType,
-                               int stage, Item tool, String stageName) {
-        List<ItemStack> outputs = buildOutputs(animalType, stage);
-        if (outputs.isEmpty()) return;
-        recipes.add(new ButcheringRecipe(
-                new ItemStack(input),
-                new ItemStack(tool),
-                stageName,
-                outputs
-        ));
     }
 
     private List<ItemStack> buildOutputs(int animalType, int stage) {

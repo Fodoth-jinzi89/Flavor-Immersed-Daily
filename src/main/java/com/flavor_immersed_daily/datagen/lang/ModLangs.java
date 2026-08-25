@@ -58,6 +58,15 @@ public final class ModLangs {
         provider.add("effect.flavor_immersed_daily.fury_assault.description", "Melee attacks cost 1 health and ignite a 10-block cone ahead, dealing 2 fire damage.");
         provider.add("effect.flavor_immersed_daily.crimson_mamba", "Crimson Mamba Elbow");
         provider.add("effect.flavor_immersed_daily.crimson_mamba.description", "Melee attacks knock back targets much harder, pushing nearby creatures in the same direction, and play a special sound on every hit.");
+        provider.add("effect.flavor_immersed_daily.expose_evil", "Evil Exposure");
+        provider.add("effect.flavor_immersed_daily.expose_evil.description", "Burns in open sky during the day. Smite affects you as if undead. Melee attacks have a chance to turn villagers into zombie villagers. Being attacked with blood in hand dispels the effect.");
+        provider.add("effect.flavor_immersed_daily.yi_de_roar", "Roar");
+        provider.add("effect.flavor_immersed_daily.yi_de_roar.description", "Your attacks ignore the target's invulnerability frames, dealing damage on every hit.");
+        provider.add("effect.flavor_immersed_daily.guan_yu_strike", "Martial Saint");
+        provider.add("effect.flavor_immersed_daily.guan_yu_strike.description", "Attacking with food consumes it and converts its saturation into true damage (max 8, configurable).");
+        provider.add("death.attack.flavor_immersed_daily.real_damage", "%1$s was slain by true damage");
+        provider.add("effect.flavor_immersed_daily.aniseed_ward", "Aniseed Ward");
+        provider.add("effect.flavor_immersed_daily.aniseed_ward.description", "While active, undead creatures within 8 blocks are slowed.");
     }
 
     private static void addConfiguration(RegistrateLangProvider provider) {
@@ -68,6 +77,7 @@ public final class ModLangs {
 
     private static void addTooltips(RegistrateLangProvider provider) {
         provider.add("tooltip.flavor_immersed_daily.crop_type.farmland", "Farmland crop that can be planted on farmland");
+        provider.add("tooltip.flavor_immersed_daily.basin_contents", "Butcher drops stored:");
         provider.add("tooltip.flavor_immersed_daily.crop_type.paddy", "Paddy crop that can be planted in deep water");
         provider.add("tooltip.flavor_immersed_daily.crop_type.mushroom", "Mushroom crop that can be planted on wood");
         provider.add("tooltip.flavor_immersed_daily.crop_type.trellis", "Trellis crop that can be planted on crop trellises");
@@ -113,6 +123,9 @@ public final class ModLangs {
         provider.add("tooltip.flavor_immersed_daily.durian_meat.desc", "Obtained by throwing a durian");
         provider.add("tooltip.flavor_immersed_daily.durian_shell.desc", "Obtained by throwing a durian");
         provider.add("tooltip.flavor_immersed_daily.sapling_harvest", "When a fruit tree matures, right-click its trunk with a stick to shake down fruit.");
+        provider.add("tooltip.flavor_immersed_daily.hot_glutinous", "Attacking a creature consumes one, ignites it for 3 seconds and applies Evil Exposure. Attacking a player launches them high into the air with a scream.");
+        provider.add("tooltip.flavor_immersed_daily.doorpaper_left", "Right-click with food: consumes 1 food and grants Roar for food saturation x10 seconds (attacks ignore invulnerability frames).");
+        provider.add("tooltip.flavor_immersed_daily.doorpaper_right", "Right-click with food: consumes 1 food and grants Martial Saint for food saturation x10 seconds (food attacks deal true damage).");
     }
 
     private static void addJei(RegistrateLangProvider provider) {
@@ -133,6 +146,8 @@ public final class ModLangs {
         provider.add("emi.category.flavor_immersed_daily.egg_breaking", "Egg Breaking Machine");
         provider.add("emi.category.flavor_immersed_daily.fridge_tempering", "Fridge - Tempering");
         provider.add("emi.category.flavor_immersed_daily.fridge_freezing", "Fridge - Freezing");
+        provider.add("emi.category.flavor_immersed_daily.butchering", "Butchering");
+        provider.add("emi.category.flavor_immersed_daily.agricultural_appraisal", "Agricultural Appraisal");
         provider.add("emi.flavor_immersed_daily.time", "%s s");
         provider.add("jade.flavor_immersed_daily.contents", "Contents");
         provider.add("jade.flavor_immersed_daily.progress", "Processing: %s%%");

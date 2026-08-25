@@ -1,15 +1,19 @@
 package com.flavor_immersed_daily.config;
 
 import com.flavor_immersed_daily.FlavorImmersedDaily;
+import com.flavor_immersed_daily.datadriver.ModDrops;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @EventBusSubscriber(modid = FlavorImmersedDaily.MODID)
 public class Config {
@@ -113,105 +117,142 @@ public class Config {
             .comment("火爆狂攻效果下，范围内生物受到的火焰伤害，默认 2.0")
             .defineInRange("furyAssaultFireDamage", 2.0, 0.0, 100.0);
 
-    //屠宰战利品配置 butcher item
+    //邪祟暴露效果配置
+    public static final ModConfigSpec.BooleanValue EXPOSE_EVIL_ENABLED = BUILDER
+            .comment("邪祟暴露（expose_evil）效果总开关，关闭后不再触发与生效")
+            .define("exposeEvilEnabled", true);
+    public static final ModConfigSpec.DoubleValue EXPOSE_EVIL_ZOMBIE_CHANCE = BUILDER
+            .comment("邪祟暴露效果下，近战攻击村民转化为僵尸村民的概率（0.0-1.0），默认 0.15")
+            .defineInRange("exposeEvilZombieChance", 0.15, 0.0, 1.0);
+    public static final ModConfigSpec.DoubleValue EXPOSE_EVIL_BLOOD_FIRE_DAMAGE = BUILDER
+            .comment("邪祟暴露效果下，被手持血液攻击时受到的灼烧伤害，默认 4.0")
+            .defineInRange("exposeEvilBloodFireDamage", 4.0, 0.0, 100.0);
+
+    //武圣效果配置
+    public static final ModConfigSpec.DoubleValue GUAN_YU_STRIKE_MAX_REAL_DAMAGE = BUILDER
+            .comment("武圣（guan_yu_strike）效果下，食物攻击转化的真实伤害上限，默认 8.0")
+            .defineInRange("guanYuStrikeMaxRealDamage", 8.0, 0.0, 100.0);
+
+    //八角镇香效果配置
+    public static final ModConfigSpec.BooleanValue ANISEED_WARD_ENABLED = BUILDER
+            .comment("八角镇香（aniseed_ward）效果总开关，关闭后不再触发与生效")
+            .define("aniseedWardEnabled", true);
+    public static final ModConfigSpec.DoubleValue ANISEED_WARD_RADIUS = BUILDER
+            .comment("八角镇香效果下，周围亡灵生物被赋予减速的半径范围（格），默认 8")
+            .defineInRange("aniseedWardRadius", 8.0, 1.0, 64.0);
+
+    // ===== bighook 抓取生物功能配置 =====
+    public static final ModConfigSpec.BooleanValue BIGHOOK_CARRY_ENABLED = BUILDER
+            .comment("是否启用 bighook 抓取生物功能：手持挂勾攻击当前生命值低于自己且非敌对/非Boss的生物（含其他玩家）时，可将其拿起",
+                    "玩家潜行（shift）无法挣脱时（此开关关闭）只能通过手里不再持有挂勾来放下生物")
+            .define("bighookCarryEnabled", true);
+    public static final ModConfigSpec.BooleanValue BIGHOOK_SHIFT_ESCAPE_ENABLED = BUILDER
+            .comment("是否允许被抓取的生物或者挂在挂钩上的生物通过潜行（shift）挣脱/被放下")
+            .define("bighookShiftEscapeEnabled", true);
+
+    // ===== 屠宰战利品配置 =====
+    // 基础掉落物已定义在模组自带 JSON（data/flavor_immersed_daily/drop_tables/butcher/*.json），
+    // 会随模组更新自动生效。下面这些 config 仅用于"额外添加"掉落物，默认留空。
     private static final String DROP_COMMENT =
-            "屠宰阶段掉落物，逗号分隔的物品ID（格式: modid:item_id）。空字符串表示不掉落。";
+            "屠宰阶段额外掉落物，逗号分隔的物品ID（格式: modid:item_id）。空字符串表示不额外添加。";
 
-    // 牛 cattle
+    // 牛 cattle（基础掉落见 butcher/cattle.json，stage1→2 放血 ... stage5→0 切肉）
     public static final ModConfigSpec.ConfigValue<String> CATTLE_DROP_1 = BUILDER
-            .comment("牛 - stage1→2 (wideedgedknife放血)", DROP_COMMENT)
-            .define("cattleDrop1", "flavor_immersed_daily:rawcattleblood");
+            .comment("牛 - stage1→2 额外掉落", DROP_COMMENT)
+            .define("cattleDrop1", "");
     public static final ModConfigSpec.ConfigValue<String> CATTLE_DROP_2 = BUILDER
-            .comment("牛 - stage2→3 (sharpknife剥皮)")
-            .define("cattleDrop2", "minecraft:leather,minecraft:leather,flavor_immersed_daily:rawcattlejoint,flavor_immersed_daily:rawcattlefat");
+            .comment("牛 - stage2→3 额外掉落", DROP_COMMENT)
+            .define("cattleDrop2", "");
     public static final ModConfigSpec.ConfigValue<String> CATTLE_DROP_3 = BUILDER
-            .comment("牛 - stage3→4 (bonecutterknife斩骨)")
-            .define("cattleDrop3", "flavor_immersed_daily:rawcattlefeet,flavor_immersed_daily:rawcattleleg,flavor_immersed_daily:rawcattlefeet,flavor_immersed_daily:rawcattleleg,flavor_immersed_daily:rawcattlefeet,flavor_immersed_daily:rawcattleleg,flavor_immersed_daily:rawcattlefeet,flavor_immersed_daily:rawcattleleg,flavor_immersed_daily:rawcattleface,flavor_immersed_daily:bullhorn,flavor_immersed_daily:bullhorn,flavor_immersed_daily:animalskull");
+            .comment("牛 - stage3→4 额外掉落", DROP_COMMENT)
+            .define("cattleDrop3", "");
     public static final ModConfigSpec.ConfigValue<String> CATTLE_DROP_4 = BUILDER
-            .comment("牛 - stage4→5 (sharpknife掏空)")
-            .define("cattleDrop4", "flavor_immersed_daily:rawcattleintestine,flavor_immersed_daily:rawcattleliver,flavor_immersed_daily:rawcattlelung,flavor_immersed_daily:rawcattlestomach,flavor_immersed_daily:rawcattleheart");
+            .comment("牛 - stage4→5 额外掉落", DROP_COMMENT)
+            .define("cattleDrop4", "");
     public static final ModConfigSpec.ConfigValue<String> CATTLE_DROP_5 = BUILDER
-            .comment("牛 - stage5→0 (sharpknife切肉)")
-            .define("cattleDrop5", "minecraft:beef,minecraft:beef,minecraft:beef,flavor_immersed_daily:rawcattletendon,flavor_immersed_daily:rawcattletendon,flavor_immersed_daily:rawsnowflakebeef,flavor_immersed_daily:bovinebone");
+            .comment("牛 - stage5→0 额外掉落", DROP_COMMENT)
+            .define("cattleDrop5", "");
 
-    // 羊 sheep
+    // 羊 sheep（基础掉落见 butcher/sheep.json）
     public static final ModConfigSpec.ConfigValue<String> SHEEP_DROP_1 = BUILDER
-            .comment("羊 - stage1→2 (wideedgedknife放血)")
-            .define("sheepDrop1", "flavor_immersed_daily:rawsheepblood");
+            .comment("羊 - stage1→2 额外掉落", DROP_COMMENT)
+            .define("sheepDrop1", "");
     public static final ModConfigSpec.ConfigValue<String> SHEEP_DROP_2 = BUILDER
-            .comment("羊 - stage2→3 (sharpknife剥皮)")
-            .define("sheepDrop2", "flavor_immersed_daily:sheepbread,flavor_immersed_daily:sheepbread,minecraft:leather,minecraft:wool,minecraft:wool,minecraft:wool,flavor_immersed_daily:rawsheepfat");
+            .comment("羊 - stage2→3 额外掉落", DROP_COMMENT)
+            .define("sheepDrop2", "");
     public static final ModConfigSpec.ConfigValue<String> SHEEP_DROP_3 = BUILDER
-            .comment("羊 - stage3→4 (bonecutterknife斩骨)")
-            .define("sheepDrop3", "minecraft:bone,minecraft:bone,flavor_immersed_daily:rawsheepface,flavor_immersed_daily:rawsheepfeet,flavor_immersed_daily:rawsheepfeet,flavor_immersed_daily:rawsheepfeet,flavor_immersed_daily:rawsheepfeet,flavor_immersed_daily:rawsheepleg,flavor_immersed_daily:rawsheepleg,flavor_immersed_daily:rawsheepleg,flavor_immersed_daily:rawsheepleg,flavor_immersed_daily:rawsheeptail,flavor_immersed_daily:rawsheepeye");
+            .comment("羊 - stage3→4 额外掉落", DROP_COMMENT)
+            .define("sheepDrop3", "");
     public static final ModConfigSpec.ConfigValue<String> SHEEP_DROP_4 = BUILDER
-            .comment("羊 - stage4→5 (sharpknife掏空)")
-            .define("sheepDrop4", "flavor_immersed_daily:rawsheepintestine,flavor_immersed_daily:rawsheepstomach,flavor_immersed_daily:rawsheepliver,flavor_immersed_daily:rawsheepheart,flavor_immersed_daily:rawsheepkidney,flavor_immersed_daily:rawsheeptailfat");
+            .comment("羊 - stage4→5 额外掉落", DROP_COMMENT)
+            .define("sheepDrop4", "");
     public static final ModConfigSpec.ConfigValue<String> SHEEP_DROP_5 = BUILDER
-            .comment("羊 - stage5→0 (sharpknife切肉)")
-            .define("sheepDrop5", ",minecraft:mutton,minecraft:mutton,minecraft:mutton,flavor_immersed_daily:rawsheepsparerib,,flavor_immersed_daily:rawsheepsparerib,flavor_immersed_daily:rawsheepspine");
+            .comment("羊 - stage5→0 额外掉落", DROP_COMMENT)
+            .define("sheepDrop5", "");
 
-    // 猪 pig
+    // 猪 pig（基础掉落见 butcher/pig.json）
     public static final ModConfigSpec.ConfigValue<String> PIG_DROP_1 = BUILDER
-            .comment("猪 - stage1→2 (wideedgedknife放血)")
-            .define("pigDrop1", "flavor_immersed_daily:rawpigblood");
+            .comment("猪 - stage1→2 额外掉落", DROP_COMMENT)
+            .define("pigDrop1", "");
     public static final ModConfigSpec.ConfigValue<String> PIG_DROP_2 = BUILDER
-            .comment("猪 - stage2→3 (sharpknife剥皮)")
-            .define("pigDrop2", "flavor_immersed_daily:rawpigskin,flavor_immersed_daily:rawpigskin,flavor_immersed_daily:rawpigfat");
+            .comment("猪 - stage2→3 额外掉落", DROP_COMMENT)
+            .define("pigDrop2", "");
     public static final ModConfigSpec.ConfigValue<String> PIG_DROP_3 = BUILDER
-            .comment("猪 - stage3→4 (bonecutterknife斩骨)")
-            .define("pigDrop3", "flavor_immersed_daily:rawpigear,flavor_immersed_daily:rawpignose,flavor_immersed_daily:rawpighead,flavor_immersed_daily:rawpigtail,flavor_immersed_daily:rawpigcerebrum,flavor_immersed_daily:rawpigfeet,flavor_immersed_daily:rawpigfeet,flavor_immersed_daily:rawpigfeet,flavor_immersed_daily:rawpigfeet,flavor_immersed_daily:rawpigleg,flavor_immersed_daily:rawpigleg,flavor_immersed_daily:rawpigleg,flavor_immersed_daily:rawpigleg");
+            .comment("猪 - stage3→4 额外掉落", DROP_COMMENT)
+            .define("pigDrop3", "");
     public static final ModConfigSpec.ConfigValue<String> PIG_DROP_4 = BUILDER
-            .comment("猪 - stage4→5 (sharpknife掏空)")
-            .define("pigDrop4", "flavor_immersed_daily:rawpigintestine,flavor_immersed_daily:rawpigstomach,flavor_immersed_daily:rawpiglung,flavor_immersed_daily:rawpigliver,flavor_immersed_daily:rawpigheart,flavor_immersed_daily:rawpigkidney,flavor_immersed_daily:rawpigkidney");
+            .comment("猪 - stage4→5 额外掉落", DROP_COMMENT)
+            .define("pigDrop4", "");
     public static final ModConfigSpec.ConfigValue<String> PIG_DROP_5 = BUILDER
-            .comment("猪 - stage5→0 (sharpknife切肉)")
-            .define("pigDrop5", "flavor_immersed_daily:rawpigtenderloin,flavor_immersed_daily:rawpigstreakypork,flavor_immersed_daily:rawpigstreakypork,minecraft:porkchop,minecraft:porkchop,minecraft:porkchop,flavor_immersed_daily:rawpigsparerib,flavor_immersed_daily:rawpigsparerib");
+            .comment("猪 - stage5→0 额外掉落", DROP_COMMENT)
+            .define("pigDrop5", "");
 
-    // 鸡 chicken（特殊：deadchicken→1→2→右键, chickenwithoutfeather→5→6→0）
+    // 鸡 chicken（基础掉落见 butcher/chicken.json，特殊：deadchicken→1→2→右键, chickenwithoutfeather→5→6→0）
     public static final ModConfigSpec.ConfigValue<String> CHICKEN_DROP_1 = BUILDER
-            .comment("鸡 - deadchicken→stage1→2 (wideedgedknife放血)")
-            .define("chickenDrop1", "flavor_immersed_daily:rawchickenblood");
+            .comment("鸡 - deadchicken→stage1→2 额外掉落", DROP_COMMENT)
+            .define("chickenDrop1", "");
     public static final ModConfigSpec.ConfigValue<String> CHICKEN_DROP_5 = BUILDER
-            .comment("鸡 - chickenwithoutfeather→stage5→6 (sharpknife掏空)")
-            .define("chickenDrop5", "flavor_immersed_daily:rawchickenliver,flavor_immersed_daily:rawchickenheart,flavor_immersed_daily:rawchickengizzard");
+            .comment("鸡 - chickenwithoutfeather→stage5→6 额外掉落", DROP_COMMENT)
+            .define("chickenDrop5", "");
     public static final ModConfigSpec.ConfigValue<String> CHICKEN_DROP_6 = BUILDER
-            .comment("鸡 - stage6→0 (sharpknife切割)")
-            .define("chickenDrop6", "flavor_immersed_daily:rawchickenneck,flavor_immersed_daily:rawchickenwing,flavor_immersed_daily:rawchickenwing,flavor_immersed_daily:rawchickenwingtip,flavor_immersed_daily:rawchickenwingtip,flavor_immersed_daily:rawhalfofchickenleg,flavor_immersed_daily:rawhalfofchickenleg,flavor_immersed_daily:rawchickenlean,flavor_immersed_daily:rawchickenhead,flavor_immersed_daily:rawchickenleg,flavor_immersed_daily:rawchickenleg,flavor_immersed_daily:rawchickenass,flavor_immersed_daily:rawchickenfeet,flavor_immersed_daily:rawchickenfeet,flavor_immersed_daily:rawchickenbreast,flavor_immersed_daily:rawchickenbreast,minecraft:chicken,flavor_immersed_daily:rawchickenfork");
+            .comment("鸡 - stage6→0 额外掉落", DROP_COMMENT)
+            .define("chickenDrop6", "");
 
     // ===== 木盆漂洗战利品 =====
+    // 基础掉落见 drop_tables/washed_chicken.json
     public static final ModConfigSpec.ConfigValue<String> WASHED_CHICKEN_DROPS = BUILDER
             .comment("chickenwithoutblood在木盆中漂洗后的额外战利品，逗号分隔的物品ID", DROP_COMMENT)
-            .define("washedChickenDrops", "minecraft:feather,minecraft:feather,minecraft:feather");
+            .define("washedChickenDrops", "");
 
     // ===== 野生采集物鉴定战利品 =====
+    // 基础掉落见 drop_tables/appraisal.json
     private static final String WILD_COMMENT =
-            "野生采集物在农产鉴定机中鉴定时的掉落物，逗号分隔的物品ID（格式: modid:item_id）。会随机生成1-3个的掉落物。";
+            "野生采集物在农产鉴定机中鉴定时的额外掉落物，逗号分隔的物品ID（格式: modid:item_id）。会随机生成1-3个的掉落物。";
 
     public static final ModConfigSpec.ConfigValue<String> TEMPERATEWILDFRUIT_DROPS = BUILDER
-            .comment("温带野果鉴定掉落物", WILD_COMMENT)
-            .define("temperateWildFruitDrops", "flavor_immersed_daily:strawberry,flavor_immersed_daily:winterjujube,flavor_immersed_daily:pear,flavor_immersed_daily:plum,flavor_immersed_daily:kiwifruit,flavor_immersed_daily:lemon,flavor_immersed_daily:grape,flavor_immersed_daily:greengrape,flavor_immersed_daily:loquat,flavor_immersed_daily:apricot,flavor_immersed_daily:honeypeach,flavor_immersed_daily:nectarine,flavor_immersed_daily:pomegranate,flavor_immersed_daily:mulberry,flavor_immersed_daily:tomato,flavor_immersed_daily:tangerine,flavor_immersed_daily:sweetmelon,minecraft:apple");
+            .comment("温带野果鉴定额外掉落物", WILD_COMMENT)
+            .define("temperateWildFruitDrops", "");
     public static final ModConfigSpec.ConfigValue<String> TROPICALWILDFRUIT_DROPS = BUILDER
-            .comment("热带野果鉴定掉落物", WILD_COMMENT)
-            .define("tropicalWildFruitDrops", "flavor_immersed_daily:pineapple,flavor_immersed_daily:orange,flavor_immersed_daily:hamimelon,flavor_immersed_daily:dragonfruit,flavor_immersed_daily:lychee,flavor_immersed_daily:durian,flavor_immersed_daily:mango,flavor_immersed_daily:pawpaw,flavor_immersed_daily:banana,flavor_immersed_daily:carambola,flavor_immersed_daily:mangosteen,flavor_immersed_daily:coconut,minecraft:melon");
+            .comment("热带野果鉴定额外掉落物", WILD_COMMENT)
+            .define("tropicalWildFruitDrops", "");
     public static final ModConfigSpec.ConfigValue<String> WILDFLOWERANDLEAF_DROPS = BUILDER
-            .comment("野花花叶鉴定掉落物", WILD_COMMENT)
-            .define("wildFlowerAndLeafDrops", "flavor_immersed_daily:chineseleaves,flavor_immersed_daily:spinach,flavor_immersed_daily:sacllion,flavor_immersed_daily:cucumber,flavor_immersed_daily:chinesechives,flavor_immersed_daily:waxgourd,flavor_immersed_daily:greentealeaves,flavor_immersed_daily:redtealeaves,flavor_immersed_daily:cauliflower,flavor_immersed_daily:zucchini,flavor_immersed_daily:broccoil,flavor_immersed_daily:cowpea,flavor_immersed_daily:loofah,flavor_immersed_daily:kidneybean,flavor_immersed_daily:tomato,flavor_immersed_daily:aubergine,flavor_immersed_daily:celery,flavor_immersed_daily:gumbo,flavor_immersed_daily:oilseedrape,flavor_immersed_daily:cabbage");
+            .comment("野花花叶鉴定额外掉落物", WILD_COMMENT)
+            .define("wildFlowerAndLeafDrops", "");
     public static final ModConfigSpec.ConfigValue<String> WILDFRUITINCOLDZONE_DROPS = BUILDER
-            .comment("寒带野果鉴定掉落物", WILD_COMMENT)
-            .define("wildFruitInColdZoneDrops", "flavor_immersed_daily:blueberry,flavor_immersed_daily:greenplum,flavor_immersed_daily:hawthorn,flavor_immersed_daily:cherry,flavor_immersed_daily:reddate,flavor_immersed_daily:walnut,flavor_immersed_daily:pistachionut");
+            .comment("寒带野果鉴定额外掉落物", WILD_COMMENT)
+            .define("wildFruitInColdZoneDrops", "");
     public static final ModConfigSpec.ConfigValue<String> WILDGRAINPLANT_DROPS = BUILDER
-            .comment("野生谷物鉴定掉落物", WILD_COMMENT)
-            .define("wildGrainPlantDrops", "flavor_immersed_daily:paddyseeds,flavor_immersed_daily:millet,flavor_immersed_daily:oat,flavor_immersed_daily:glutinousseeds,flavor_immersed_daily:red_bean_block,flavor_immersed_daily:mungbean,flavor_immersed_daily:peanut,flavor_immersed_daily:kao_liang_seed,flavor_immersed_daily:soybean,flavor_immersed_daily:buckwheat,flavor_immersed_daily:corn,flavor_immersed_daily:pea,flavor_immersed_daily:coffeebeanseed,minecraft:wheat_seeds");
+            .comment("野生谷物鉴定额外掉落物", WILD_COMMENT)
+            .define("wildGrainPlantDrops", "");
     public static final ModConfigSpec.ConfigValue<String> WILDMUSHROOMPLANT_DROPS = BUILDER
-            .comment("野生菌菇鉴定掉落物", WILD_COMMENT)
-            .define("wildMushroomPlantDrops", "minecraft:red_mushroom,minecraft:brown_mushroom,flavor_immersed_daily:whitemushroom,flavor_immersed_daily:enokimushroom,flavor_immersed_daily:tremella,flavor_immersed_daily:blackfungus,flavor_immersed_daily:fragrantmushroom,flavor_immersed_daily:pleurotuseryngii");
+            .comment("野生菌菇鉴定额外掉落物", WILD_COMMENT)
+            .define("wildMushroomPlantDrops", "");
     public static final ModConfigSpec.ConfigValue<String> WILDSEEDPLANT_DROPS = BUILDER
-            .comment("野生籽叶鉴定掉落物", WILD_COMMENT)
-            .define("wildSeedPlantDrops", "flavor_immersed_daily:aniseed_0,flavor_immersed_daily:lilac_seed,flavor_immersed_daily:cinnamon,flavor_immersed_daily:si_chuan_pepper_seed,flavor_immersed_daily:fennel,flavor_immersed_daily:greenpepper,flavor_immersed_daily:redrepper,flavor_immersed_daily:sweetgreenpepper,flavor_immersed_daily:nutmeg,flavor_immersed_daily:sesame,flavor_immersed_daily:cumin,flavor_immersed_daily:garlic,flavor_immersed_daily:ginger,flavor_immersed_daily:onion,flavor_immersed_daily:nutmegseed");
+            .comment("野生籽叶鉴定额外掉落物", WILD_COMMENT)
+            .define("wildSeedPlantDrops", "");
     public static final ModConfigSpec.ConfigValue<String> WILDTUBERPLANTS_DROPS = BUILDER
-            .comment("野生块茎鉴定掉落物", WILD_COMMENT)
-            .define("wildTuberPlantsDrops", "flavor_immersed_daily:sweetpotato,flavor_immersed_daily:cassava,flavor_immersed_daily:radish,flavor_immersed_daily:lotusroot,flavor_immersed_daily:chineseyam,flavor_immersed_daily:purplesweetpotato,flavor_immersed_daily:mustard,flavor_immersed_daily:onion,minecraft:potato,minecraft:carrot");
+            .comment("野生块茎鉴定额外掉落物", WILD_COMMENT)
+            .define("wildTuberPlantsDrops", "");
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 
@@ -243,6 +284,14 @@ public class Config {
     public static double furyAssaultHealthCost = 1.0;
     public static double furyAssaultRange = 10.0;
     public static double furyAssaultFireDamage = 2.0;
+    public static boolean exposeEvilEnabled = true;
+    public static double exposeEvilZombieChance = 0.15;
+    public static double exposeEvilBloodFireDamage = 4.0;
+    public static double guanYuStrikeMaxRealDamage = 8.0;
+    public static boolean aniseedWardEnabled = true;
+    public static double aniseedWardRadius = 8.0;
+    public static boolean bighookCarryEnabled = true;
+    public static boolean bighookShiftEscapeEnabled = true;
     public static Map<Integer, List<String>> cattleDrops = new HashMap<>();
     public static Map<Integer, List<String>> sheepDrops = new HashMap<>();
     public static Map<Integer, List<String>> pigDrops = new HashMap<>();
@@ -279,39 +328,106 @@ public class Config {
         furyAssaultHealthCost = FURY_ASSAULT_HEALTH_COST.get();
         furyAssaultRange = FURY_ASSAULT_RANGE.get();
         furyAssaultFireDamage = FURY_ASSAULT_FIRE_DAMAGE.get();
+        exposeEvilEnabled = EXPOSE_EVIL_ENABLED.get();
+        exposeEvilZombieChance = EXPOSE_EVIL_ZOMBIE_CHANCE.get();
+        exposeEvilBloodFireDamage = EXPOSE_EVIL_BLOOD_FIRE_DAMAGE.get();
+        guanYuStrikeMaxRealDamage = GUAN_YU_STRIKE_MAX_REAL_DAMAGE.get();
+        aniseedWardEnabled = ANISEED_WARD_ENABLED.get();
+        aniseedWardRadius = ANISEED_WARD_RADIUS.get();
+        bighookCarryEnabled = BIGHOOK_CARRY_ENABLED.get();
+        bighookShiftEscapeEnabled = BIGHOOK_SHIFT_ESCAPE_ENABLED.get();
 
-        cattleDrops.put(1, parseDrops(CATTLE_DROP_1.get()));
-        cattleDrops.put(2, parseDrops(CATTLE_DROP_2.get()));
-        cattleDrops.put(3, parseDrops(CATTLE_DROP_3.get()));
-        cattleDrops.put(4, parseDrops(CATTLE_DROP_4.get()));
-        cattleDrops.put(5, parseDrops(CATTLE_DROP_5.get()));
+        // 基础掉落物来自模组自带 JSON，config 只做"额外添加"
+        ModDrops.init();
+        cattleDrops = buildButcherDrops(ModDrops.cattleDefaults,
+                CATTLE_DROP_1.get(), CATTLE_DROP_2.get(), CATTLE_DROP_3.get(), CATTLE_DROP_4.get(), CATTLE_DROP_5.get());
+        sheepDrops = buildButcherDrops(ModDrops.sheepDefaults,
+                SHEEP_DROP_1.get(), SHEEP_DROP_2.get(), SHEEP_DROP_3.get(), SHEEP_DROP_4.get(), SHEEP_DROP_5.get());
+        pigDrops = buildButcherDrops(ModDrops.pigDefaults,
+                PIG_DROP_1.get(), PIG_DROP_2.get(), PIG_DROP_3.get(), PIG_DROP_4.get(), PIG_DROP_5.get());
+        chickenDrops = buildChickenDrops(CHICKEN_DROP_1.get(), CHICKEN_DROP_5.get(), CHICKEN_DROP_6.get());
 
-        sheepDrops.put(1, parseDrops(SHEEP_DROP_1.get()));
-        sheepDrops.put(2, parseDrops(SHEEP_DROP_2.get()));
-        sheepDrops.put(3, parseDrops(SHEEP_DROP_3.get()));
-        sheepDrops.put(4, parseDrops(SHEEP_DROP_4.get()));
-        sheepDrops.put(5, parseDrops(SHEEP_DROP_5.get()));
+        washedChickenDrops = mergeExtraList(ModDrops.washedChickenDefaults, parseDrops(WASHED_CHICKEN_DROPS.get()));
 
-        pigDrops.put(1, parseDrops(PIG_DROP_1.get()));
-        pigDrops.put(2, parseDrops(PIG_DROP_2.get()));
-        pigDrops.put(3, parseDrops(PIG_DROP_3.get()));
-        pigDrops.put(4, parseDrops(PIG_DROP_4.get()));
-        pigDrops.put(5, parseDrops(PIG_DROP_5.get()));
+        wildDrops.put("flavor_immersed_daily:temperatewildfruit",
+                mergeExtraList(ModDrops.appraisalDefaults.getOrDefault("flavor_immersed_daily:temperatewildfruit", List.of()), parseDrops(TEMPERATEWILDFRUIT_DROPS.get())));
+        wildDrops.put("flavor_immersed_daily:tropicalwild_fruit",
+                mergeExtraList(ModDrops.appraisalDefaults.getOrDefault("flavor_immersed_daily:tropicalwild_fruit", List.of()), parseDrops(TROPICALWILDFRUIT_DROPS.get())));
+        wildDrops.put("flavor_immersed_daily:wildflowerandleaf",
+                mergeExtraList(ModDrops.appraisalDefaults.getOrDefault("flavor_immersed_daily:wildflowerandleaf", List.of()), parseDrops(WILDFLOWERANDLEAF_DROPS.get())));
+        wildDrops.put("flavor_immersed_daily:wildfruitincoldzone",
+                mergeExtraList(ModDrops.appraisalDefaults.getOrDefault("flavor_immersed_daily:wildfruitincoldzone", List.of()), parseDrops(WILDFRUITINCOLDZONE_DROPS.get())));
+        wildDrops.put("flavor_immersed_daily:wildgrainplant",
+                mergeExtraList(ModDrops.appraisalDefaults.getOrDefault("flavor_immersed_daily:wildgrainplant", List.of()), parseDrops(WILDGRAINPLANT_DROPS.get())));
+        wildDrops.put("flavor_immersed_daily:wildmushroomplant",
+                mergeExtraList(ModDrops.appraisalDefaults.getOrDefault("flavor_immersed_daily:wildmushroomplant", List.of()), parseDrops(WILDMUSHROOMPLANT_DROPS.get())));
+        wildDrops.put("flavor_immersed_daily:wildseedplant",
+                mergeExtraList(ModDrops.appraisalDefaults.getOrDefault("flavor_immersed_daily:wildseedplant", List.of()), parseDrops(WILDSEEDPLANT_DROPS.get())));
+        wildDrops.put("flavor_immersed_daily:wildtuberplants",
+                mergeExtraList(ModDrops.appraisalDefaults.getOrDefault("flavor_immersed_daily:wildtuberplants", List.of()), parseDrops(WILDTUBERPLANTS_DROPS.get())));
+    }
 
-        chickenDrops.put(1, parseDrops(CHICKEN_DROP_1.get()));
-        chickenDrops.put(5, parseDrops(CHICKEN_DROP_5.get()));
-        chickenDrops.put(6, parseDrops(CHICKEN_DROP_6.get()));
+    /**
+     * 组装屠宰掉落表：以 JSON 默认为基础，追加 config 额外产物。
+     * 为了兼容老玩家 config 中残留的旧默认值，与默认掉落重复的额外项会被忽略。
+     */
+    private static Map<Integer, List<String>> buildButcherDrops(Map<Integer, List<String>> defaults, String... extrasRaw) {
+        Map<Integer, List<String>> map = copyButcher(defaults);
+        Set<String> defaultsIds = collectIds(map);
+        for (int stage = 0; stage < extrasRaw.length; stage++) {
+            addStageExtra(map, stage + 1, extrasRaw[stage], defaultsIds);
+        }
+        return map;
+    }
 
-        washedChickenDrops = parseDrops(WASHED_CHICKEN_DROPS.get());
+    /** 鸡的屠宰流程阶段并不连续（1→2→右键，5→6→回收），逐阶段合并额外产物。 */
+    private static Map<Integer, List<String>> buildChickenDrops(String drop1, String drop5, String drop6) {
+        Map<Integer, List<String>> map = copyButcher(ModDrops.chickenDefaults);
+        Set<String> defaultsIds = collectIds(map);
+        addStageExtra(map, 1, drop1, defaultsIds);
+        addStageExtra(map, 5, drop5, defaultsIds);
+        addStageExtra(map, 6, drop6, defaultsIds);
+        return map;
+    }
 
-        wildDrops.put("flavor_immersed_daily:temperatewildfruit", parseDrops(TEMPERATEWILDFRUIT_DROPS.get()));
-        wildDrops.put("flavor_immersed_daily:tropicalwild_fruit", parseDrops(TROPICALWILDFRUIT_DROPS.get()));
-        wildDrops.put("flavor_immersed_daily:wildflowerandleaf", parseDrops(WILDFLOWERANDLEAF_DROPS.get()));
-        wildDrops.put("flavor_immersed_daily:wildfruitincoldzone", parseDrops(WILDFRUITINCOLDZONE_DROPS.get()));
-        wildDrops.put("flavor_immersed_daily:wildgrainplant", parseDrops(WILDGRAINPLANT_DROPS.get()));
-        wildDrops.put("flavor_immersed_daily:wildmushroomplant", parseDrops(WILDMUSHROOMPLANT_DROPS.get()));
-        wildDrops.put("flavor_immersed_daily:wildseedplant", parseDrops(WILDSEEDPLANT_DROPS.get()));
-        wildDrops.put("flavor_immersed_daily:wildtuberplants", parseDrops(WILDTUBERPLANTS_DROPS.get()));
+    private static Map<Integer, List<String>> copyButcher(Map<Integer, List<String>> defaults) {
+        Map<Integer, List<String>> map = new HashMap<>();
+        for (Map.Entry<Integer, List<String>> entry : defaults.entrySet()) {
+            map.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+        return map;
+    }
+
+    private static Set<String> collectIds(Map<Integer, List<String>> map) {
+        Set<String> ids = new HashSet<>();
+        for (List<String> list : map.values()) {
+            ids.addAll(list);
+        }
+        return ids;
+    }
+
+    private static void addStageExtra(Map<Integer, List<String>> map, int stage, String raw, Set<String> defaultsIds) {
+        map.computeIfAbsent(stage, ignored -> new ArrayList<>())
+                .addAll(extraOnly(parseDrops(raw), defaultsIds));
+    }
+
+    /** 在默认列表基础上追加额外产物，并去除与默认重复的项。 */
+    private static List<String> mergeExtraList(List<String> defaults, List<String> extras) {
+        List<String> result = new ArrayList<>(defaults);
+        Set<String> defaultsIds = new HashSet<>(defaults);
+        result.addAll(extraOnly(extras, defaultsIds));
+        return result;
+    }
+
+    /** 只保留不在 defaultsIds 中的额外项（空串忽略）。 */
+    private static List<String> extraOnly(List<String> extras, Set<String> defaultsIds) {
+        List<String> out = new ArrayList<>();
+        for (String id : extras) {
+            if (!id.isEmpty() && !defaultsIds.contains(id)) {
+                out.add(id);
+            }
+        }
+        return out;
     }
 
     private static List<String> parseDrops(String raw) {

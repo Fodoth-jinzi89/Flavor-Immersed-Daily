@@ -627,7 +627,9 @@ public class ModCreateTab {
                 output.accept(ROASTCHICKENFORK.get()); output.accept(ROASTEDSWEETPOTATO.get()); output.accept(SHELLEDBOILEDEGG.get()); output.accept(SHOU_KAI_XIN_GUO.get()); output.accept(SMALLMICEDMEATCAKE.get());
                 output.accept(STEAMEDSALTORANGE.get()); output.accept(STEAMEDVERMICELLIROLL_0.get()); output.accept(STRAWBERRYCAKEROLL.get()); output.accept(SWEETMILK.get()); output.accept(TOFU_SAUSAGE.get());
                 output.accept(TOFU_STICKS.get()); output.accept(WALNUTCAKE.get()); output.accept(WALNUTSHORTBREAD.get()); output.accept(WHEATMILK.get()); output.accept(YUBA.get());
+                output.accept(HOT_GLUTINOUS.get());
                 output.accept(TOUFU.get()); output.accept(EGGCAKE.get()); output.accept(GOLDRICECAKEMAX.get()); output.accept(GOLDENGRAPEMAX.get());
+                output.accept(COOKED_WHOLE_SHEEP.asItem());
             }).build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> INGREDIENT_TAB = REGISTRY.register("ingredient", () -> CreativeModeTab.builder()

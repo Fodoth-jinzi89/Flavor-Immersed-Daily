@@ -58,7 +58,7 @@ public class MultiStageInteractiveBlock extends Block {
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
-        level.destroyBlock(pos, true);
+        level.destroyBlock(pos, false);
         level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.BLOCKS, 0.8F, 1.0F);
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

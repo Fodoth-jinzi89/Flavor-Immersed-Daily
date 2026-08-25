@@ -15,6 +15,10 @@ public final class ModSounds {
             () -> SoundEvent.createVariableRangeEvent(
                     ResourceLocation.fromNamespaceAndPath(FlavorImmersedDaily.MODID, "manbaout")));
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> GIAO = REGISTRY.register("giao",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(FlavorImmersedDaily.MODID, "giao")));
+
     private ModSounds() {}
 
     public static void register(IEventBus eventBus) {

@@ -2,6 +2,7 @@ package com.flavor_immersed_daily.all;
 
 import com.flavor_immersed_daily.FlavorImmersedDaily;
 import com.flavor_immersed_daily.block.block.food.MultiStageInteractiveBlock;
+import com.flavor_immersed_daily.block.block.food.CookedWholeSheepBlock;
 import com.flavor_immersed_daily.item.ColorfulFireworksBoxItem;
 import com.flavor_immersed_daily.item.CoupletBlockItem;
 import com.flavor_immersed_daily.client.tooltip.TooltipBlockItem;
@@ -16,6 +17,7 @@ import com.flavor_immersed_daily.block.block.machine.*;
 import com.flavor_immersed_daily.block.block.processing.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +39,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -1142,6 +1145,28 @@ public static final DeferredItem<BlockItem> COCONUTJUICE = BLOCK_ITEMS.register(
             .build()
             .register();
 
+    public static final BlockEntry<CookedWholeSheepBlock> COOKED_WHOLE_SHEEP = REGISTRATE
+            .block("cooked_whole_sheep", CookedWholeSheepBlock::new)
+            .initialProperties(() -> net.minecraft.world.level.block.Blocks.OAK_PLANKS)
+            .properties(properties -> properties.strength(0.5f)
+                    .sound(SoundType.WOOD)
+                    .isSuffocating((state, level, pos) -> false)
+                    .isViewBlocking((state, level, pos) -> false)
+                    .noOcclusion())
+            .blockstate((ctx, provider) -> provider.simpleBlock(ctx.get(),
+                    provider.models().getExistingFile(
+                            ResourceLocation.fromNamespaceAndPath(FlavorImmersedDaily.MODID, "block/cooked_whole_sheep_invisible"))))
+            .item((block, properties) -> new TooltipBlockItem(block, properties.food(
+                    new FoodProperties.Builder().nutrition(4).saturationModifier(0.6F).alwaysEdible().build()),
+                    Component.translatable("tooltip.flavor_immersed_daily.cooked_whole_sheep")
+                            .withStyle(ChatFormatting.RED),
+                    () -> java.util.List.of()))
+            .model((ctx, provider) -> provider.withExistingParent(ctx.getName(), "item/generated")
+                    .texture("layer0", "flavor_immersed_daily:item/cooked_whole_sheep"))
+            .build()
+            .loot((loot, block) -> loot.dropSelf(block))
+            .register();
+
     public static final DeferredBlock<JuiceBlock> HAMIMELONJUICE_BLOCK = REGISTRY.register("hamimelonjuice",
             () -> new JuiceBlock(5, 0.8f));
 
@@ -1728,15 +1753,21 @@ public static final DeferredItem<BlockItem> COCONUTJUICE = BLOCK_ITEMS.register(
             .register();
 
     public static final BlockEntry<DoorPaperBlock> LEFT_DOOR_PAPER = REGISTRATE.block("leftdoorpaper",
-            properties -> new DoorPaperBlock(properties.instabreak().noCollission().sound(SoundType.WOOL)))
+            properties -> new DoorPaperBlock(properties.instabreak().noCollission().sound(SoundType.WOOL), true))
             .setData(ProviderType.BLOCKSTATE, (ctx, provider) -> {})
-            .item().build()
+            .item((block, properties) -> new TooltipBlockItem(block, properties,
+                    Component.translatable("tooltip.flavor_immersed_daily.doorpaper_left"),
+                    () -> List.of()))
+            .build()
             .register();
 
     public static final BlockEntry<DoorPaperBlock> RIGHT_DOOR_PAPER = REGISTRATE.block("rightdoorpaper",
-            properties -> new DoorPaperBlock(properties.instabreak().noCollission().sound(SoundType.WOOL)))
+            properties -> new DoorPaperBlock(properties.instabreak().noCollission().sound(SoundType.WOOL), false))
             .setData(ProviderType.BLOCKSTATE, (ctx, provider) -> {})
-            .item().build()
+            .item((block, properties) -> new TooltipBlockItem(block, properties,
+                    Component.translatable("tooltip.flavor_immersed_daily.doorpaper_right"),
+                    () -> List.of()))
+            .build()
             .register();
 
     public static final BlockEntry<CoupletBlock> ANTITHETICAL_COUPLET_1 = REGISTRATE.block("antithetical_couplet_1",

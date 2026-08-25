@@ -9,6 +9,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -20,13 +21,17 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -45,6 +50,8 @@ public class WoodBasinBlockEntity extends BlockEntity {
     private int stompCount;
     private int stompCooldown;
     private final Map<UUID, EntityStompData> entityData = new HashMap<>();
+    /** 屠宰掉落的存储：物品id → 数量（挂钩下方有木盆时落入此处） */
+    private final Map<String, Integer> butcherStorage = new LinkedHashMap<>();
 
     /** 每个实体的踩踏状态 */
     private static class EntityStompData {
@@ -175,6 +182,53 @@ public class WoodBasinBlockEntity extends BlockEntity {
         return tickCount;
     }
 
+    // ===== 屠宰产物存储 =====
+
+    /** 把一批屠宰掉落放入盆中（服务端调用）。 */
+    public void addDrops(List<String> dropIds) {
+        for (String id : dropIds) {
+            if (id == null || id.isEmpty()) {
+                continue;
+            }
+            butcherStorage.merge(id, 1, Integer::sum);
+        }
+        setChanged();
+        syncToClient();
+    }
+
+    /** 盆中是否有屠宰产物。 */
+    public boolean hasStorage() {
+        return !butcherStorage.isEmpty();
+    }
+
+    /** 以物品栈列表返回内容（每种物品一个栈，数量累加）。 */
+    public List<ItemStack> getStorageStacks() {
+        List<ItemStack> stacks = new ArrayList<>();
+        for (Map.Entry<String, Integer> e : butcherStorage.entrySet()) {
+            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(e.getKey()));
+            if (item != null) {
+                stacks.add(new ItemStack(item, e.getValue()));
+            }
+        }
+        return stacks;
+    }
+
+    /** 取出全部内容并清空（服务端调用，返回待生成的掉落）。 */
+    public List<ItemStack> takeAll() {
+        List<ItemStack> stacks = getStorageStacks();
+        butcherStorage.clear();
+        setChanged();
+        syncToClient();
+        return stacks;
+    }
+
+    /** 把最新数据同步给客户端（用于渲染与悬停显示）。 */
+    private void syncToClient() {
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+        }
+    }
+
     // ===== 网络同步 =====
 
     @Nullable
@@ -203,6 +257,12 @@ public class WoodBasinBlockEntity extends BlockEntity {
         fruitCount = tag.getInt("fruitCount");
         stompCount = tag.getInt("stompCount");
         stompCooldown = tag.getInt("stompCooldown");
+        butcherStorage.clear();
+        ListTag storageList = tag.getList("butcherStorage", CompoundTag.TAG_COMPOUND);
+        for (int i = 0; i < storageList.size(); i++) {
+            CompoundTag entry = storageList.getCompound(i);
+            butcherStorage.put(entry.getString("id"), entry.getInt("count"));
+        }
     }
 
     @Override
@@ -213,5 +273,13 @@ public class WoodBasinBlockEntity extends BlockEntity {
         tag.putInt("fruitCount", fruitCount);
         tag.putInt("stompCount", stompCount);
         tag.putInt("stompCooldown", stompCooldown);
+        ListTag storageList = new ListTag();
+        for (Map.Entry<String, Integer> e : butcherStorage.entrySet()) {
+            CompoundTag entry = new CompoundTag();
+            entry.putString("id", e.getKey());
+            entry.putInt("count", e.getValue());
+            storageList.add(entry);
+        }
+        tag.put("butcherStorage", storageList);
     }
 }

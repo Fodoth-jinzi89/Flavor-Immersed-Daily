@@ -1221,7 +1221,8 @@ public final class ModItems {
 
     public static final DeferredItem<Item> ORLEANSPOWDER = REGISTRY.register("orleanspowder", () -> new Item(new Item.Properties()));
 
-    public static final DeferredItem<Item> ANISEEDPOWDER = REGISTRY.register("aniseedpowder", () -> new Item(new Item.Properties()));
+    public static final DeferredItem<Item> ANISEEDPOWDER = REGISTRY.register("aniseedpowder", () -> new SeasoningItem(
+            new Item.Properties(), () -> ModEffects.ANISEED_WARD, () -> Config.aniseedWardEnabled));
 
     public static final DeferredItem<Item> ONIONPOWDER = REGISTRY.register("onionpowder", () -> new SeasoningItem(
             new Item.Properties(), () -> ModEffects.HULK_LEEK, () -> Config.hulkLeekEnabled));
@@ -2503,6 +2504,11 @@ public final class ModItems {
     public static final DeferredItem<Item> OATGRAIN = REGISTRY.register("oatgrain", () -> new Item(new Item.Properties()));
 
     public static final DeferredItem<Item> POLISHEDGLUTINOUSRICE_2 = REGISTRY.register("polishedglutinousrice_2", () -> new Item(new Item.Properties()));
+
+    public static final DeferredItem<Item> HOT_GLUTINOUS = REGISTRY.register("hot_glutinous", () -> new TooltipItem(
+            new Item.Properties().food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.3f).alwaysEdible().build()),
+            Component.translatable("tooltip.flavor_immersed_daily.hot_glutinous"),
+            () -> List.of()));
 
     public static final DeferredItem<Item> RAW_BAOZI = REGISTRY.register("raw_baozi", () -> new Item(new Item.Properties()));
 

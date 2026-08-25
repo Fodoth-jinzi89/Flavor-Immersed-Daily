@@ -14,8 +14,11 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * 木盆渲染器 — 渲染chickenwithoutblood浮动 / 水果小堆
+ * 木盆渲染器 — 渲染chickenwithoutblood浮动 / 水果小堆 / 屠宰产物
  */
 public class WoodBasinBlockEntityRenderer implements BlockEntityRenderer<WoodBasinBlockEntity> {
 
@@ -32,6 +35,9 @@ public class WoodBasinBlockEntityRenderer implements BlockEntityRenderer<WoodBas
         }
         if (entity.getBlockState().getValue(WoodBasinBlock.HAS_FRUIT)) {
             renderFruitPile(entity, poseStack, bufferSource, packedLight, packedOverlay);
+        }
+        if (entity.hasStorage()) {
+            renderStorage(entity, poseStack, bufferSource, packedLight, packedOverlay);
         }
     }
 
@@ -85,6 +91,47 @@ public class WoodBasinBlockEntityRenderer implements BlockEntityRenderer<WoodBas
 
             Minecraft.getInstance().getItemRenderer().renderStatic(
                     fruitStack, ItemDisplayContext.FIXED, packedLight, packedOverlay,
+                    poseStack, bufferSource, entity.getLevel(), 0);
+            poseStack.popPose();
+        }
+    }
+
+    private void renderStorage(WoodBasinBlockEntity entity, PoseStack poseStack,
+                               MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        List<ItemStack> stacks = entity.getStorageStacks();
+        if (stacks.isEmpty()) return;
+
+        // 把每种物品按数量展开成图标，最多 16 个
+        List<ItemStack> icons = new ArrayList<>();
+        for (ItemStack s : stacks) {
+            int limit = 16 - icons.size();
+            int n = Math.max(1, Math.min(s.getCount(), limit));
+            for (int i = 0; i < n; i++) {
+                icons.add(s);
+            }
+            if (icons.size() >= 16) break;
+        }
+
+        long seed = entity.getBlockPos().asLong();
+        RandomSource random = RandomSource.create(seed);
+
+        // 堆在盆底（盆高6px，y≈0.12~0.3），散落摆放
+        for (ItemStack icon : icons) {
+            poseStack.pushPose();
+            float x = 0.22f + random.nextFloat() * 0.56f;
+            float z = 0.22f + random.nextFloat() * 0.56f;
+            float y = 0.1f + random.nextFloat() * 0.2f;
+
+            poseStack.translate(x, y, z);
+            poseStack.mulPose(Axis.XP.rotationDegrees(70 + random.nextFloat() * 40));
+            poseStack.mulPose(Axis.YP.rotationDegrees(random.nextFloat() * 360));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(random.nextFloat() * 40 - 20));
+
+            float scale = 0.26f + random.nextFloat() * 0.26f;
+            poseStack.scale(scale, scale, scale);
+
+            Minecraft.getInstance().getItemRenderer().renderStatic(
+                    icon, ItemDisplayContext.FIXED, packedLight, packedOverlay,
                     poseStack, bufferSource, entity.getLevel(), 0);
             poseStack.popPose();
         }

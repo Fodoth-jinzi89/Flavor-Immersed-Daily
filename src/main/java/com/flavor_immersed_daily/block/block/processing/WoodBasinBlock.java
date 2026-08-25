@@ -100,6 +100,18 @@ public class WoodBasinBlock extends BaseEntityBlock {
         boolean hasChicken = state.getValue(HAS_CHICKEN);
         boolean hasFruit = state.getValue(HAS_FRUIT);
 
+        // === 屠宰产物：一次全部取出 ===
+        if (level.getBlockEntity(pos) instanceof WoodBasinBlockEntity basinBe && basinBe.hasStorage()) {
+            if (!level.isClientSide) {
+                for (ItemStack s : basinBe.takeAll()) {
+                    level.addFreshEntity(new ItemEntity(level,
+                            pos.getX() + 0.5, pos.getY() + 0.7, pos.getZ() + 0.5, s));
+                }
+            }
+            level.playSound(player, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.6f, 1.0f);
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
+
         // === chickenwithoutblood 放上水盆 ===
         if (watered && !hasChicken && !hasFruit && stack.is(ModItems.CHICKENWITHOUTBLOOD.get())) {
             if (!level.isClientSide) {
@@ -198,6 +210,13 @@ public class WoodBasinBlock extends BaseEntityBlock {
                                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                                 fruitStack));
                     }
+                }
+            }
+            // 屠宰产物存储：拆盆时掉落
+            if (level.getBlockEntity(pos) instanceof WoodBasinBlockEntity storageBe && storageBe.hasStorage()) {
+                for (ItemStack s : storageBe.takeAll()) {
+                    level.addFreshEntity(new ItemEntity(level,
+                            pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, s));
                 }
             }
             super.onRemove(state, level, pos, newState, moved);

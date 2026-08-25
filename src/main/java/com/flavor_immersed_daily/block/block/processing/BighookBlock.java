@@ -1,13 +1,18 @@
 package com.flavor_immersed_daily.block.block.processing;
 
 import com.flavor_immersed_daily.all.ModItems;
+import com.flavor_immersed_daily.all.ModBlockEntities;
 
 import com.flavor_immersed_daily.block.blockentity.BighookBlockEntity;
+import com.flavor_immersed_daily.block.blockentity.WoodBasinBlockEntity;
 import com.flavor_immersed_daily.config.Config;
+import com.flavor_immersed_daily.gameplay.BighookCarryHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -24,6 +29,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -38,6 +45,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -98,6 +106,8 @@ public class BighookBlock extends Block implements SimpleWaterloggedBlock, Entit
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos pos = context.getClickedPos();
+        // 登记"该玩家手拿的生物可放到这个挂钩坐标"，供 onPlace 转移使用（不依赖放置后手上是否还有挂钩）
+        BighookCarryHandler.markPendingHang(context.getPlayer(), pos);
         FluidState fluidState = context.getLevel().getFluidState(pos);
         return canSurvive(defaultBlockState(), context.getLevel(), pos)
                 ? defaultBlockState()
@@ -132,6 +142,14 @@ public class BighookBlock extends Block implements SimpleWaterloggedBlock, Entit
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hitResult) {
+        // 挂钩上挂着被抓取的生物：其他玩家（或任意玩家）右键即可放下
+        if (level.getBlockEntity(pos) instanceof BighookBlockEntity be && be.hasCarried()) {
+            if (!level.isClientSide) {
+                be.releaseCarried();
+            }
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
+
         int stage = state.getValue(STAGE);
         int animal = state.getValue(ANIMAL);
 
@@ -234,8 +252,15 @@ public class BighookBlock extends Block implements SimpleWaterloggedBlock, Entit
     }
 
 //从config弄掉落物，玩家可以自行添加哦
+//若挂钩下方有木盆，则产物直接存入木盆；否则在挂钩处生成掉落物
     private void spawnDrops(Level level, BlockPos pos, int animal, int stage) {
         List<String> dropIds = Config.getDrops(animal, stage);
+        WoodBasinBlockEntity basin = findBasinBelow(level, pos);
+        if (basin != null) {
+            basin.addDrops(dropIds);
+            level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.5f, 0.8f);
+            return;
+        }
         for (String itemId : dropIds) {
             Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemId));
             if (item != null) {
@@ -247,9 +272,52 @@ public class BighookBlock extends Block implements SimpleWaterloggedBlock, Entit
         }
     }
 
+    /** 查找挂钩下方的木盆（向下最多4格，遇到非空气非木盆的方块即停止搜索）。 */
+    private WoodBasinBlockEntity findBasinBelow(Level level, BlockPos pos) {
+        for (int dy = 1; dy <= 4; dy++) {
+            BlockPos p = pos.below(dy);
+            BlockState s = level.getBlockState(p);
+            if (s.is(Blocks.AIR)) {
+                continue;
+            }
+            if (level.getBlockEntity(p) instanceof WoodBasinBlockEntity basin) {
+                return basin;
+            }
+            break;
+        }
+        return null;
+    }
+
     @Override
     @Nullable
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new BighookBlockEntity(pos, state);
+    }
+
+    @Override
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        if (level.isClientSide) return null;
+        if (type != ModBlockEntities.BIGHOOK_BE.get()) return null;
+        return (l, p, s, be) -> BighookBlockEntity.tick(l, p, s, (BighookBlockEntity) be);
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        // 玩家拿着被拿起的生物放置挂钩时，把该生物转移到挂钩上挂住
+        if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
+            BighookCarryHandler.tryHangOnPlace(serverLevel, pos);
+        }
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        // 挂钩被拆除时释放挂在上面的被抓取生物，避免实体被永久锁在原地
+        if (!state.is(newState.getBlock()) && !isMoving
+                && level.getBlockEntity(pos) instanceof BighookBlockEntity be) {
+            be.releaseCarried();
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
     }
 }

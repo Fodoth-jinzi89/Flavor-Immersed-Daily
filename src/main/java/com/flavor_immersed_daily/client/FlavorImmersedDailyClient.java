@@ -4,6 +4,7 @@ import com.flavor_immersed_daily.FlavorImmersedDaily;
 import com.flavor_immersed_daily.all.ModBlocks;
 import com.flavor_immersed_daily.all.ModEffects;
 import com.flavor_immersed_daily.all.ModEntities;
+import com.flavor_immersed_daily.block.blockentity.WoodBasinBlockEntity;
 import com.flavor_immersed_daily.datagen.tag.FIDItemTags;
 
 import com.flavor_immersed_daily.all.ModItems;
@@ -14,6 +15,9 @@ import com.flavor_immersed_daily.screen.FridgeScreen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
@@ -26,10 +30,13 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import com.flavor_immersed_daily.block.block.processing.WoodBasinBlock;
 
+import java.util.List;
 import java.util.Set;
 
 @Mod(value = FlavorImmersedDaily.MODID, dist = Dist.CLIENT)
@@ -53,6 +60,14 @@ public class FlavorImmersedDailyClient {
     public FlavorImmersedDailyClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         container.getEventBus().addListener(this::registerRenderers);
+        container.getEventBus().addListener(this::registerLayerDefinitions);
+    }
+
+    private void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        for (int i = 0; i < CookedWholeSheepRenderer.LAYER_LOCATIONS.length; i++) {
+            event.registerLayerDefinition(CookedWholeSheepRenderer.LAYER_LOCATIONS[i],
+                    CookedWholeSheepRenderer.LAYER_DEFINITIONS[i]);
+        }
     }
 
     private void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -61,6 +76,7 @@ public class FlavorImmersedDailyClient {
         event.registerBlockEntityRenderer(com.flavor_immersed_daily.all.ModBlockEntities.WOODBASIN_ENTITY.get(), WoodBasinBlockEntityRenderer::new);
         event.registerEntityRenderer(ModEntities.WINDOW_PAPER_ENTITY.get(), WindowPaperEntityRenderer::new);
         event.registerBlockEntityRenderer(com.flavor_immersed_daily.all.ModBlockEntities.COUPLET_ENTITY.get(), CoupletRenderer::new);
+        event.registerBlockEntityRenderer(com.flavor_immersed_daily.all.ModBlockEntities.COOKED_WHOLE_SHEEP_ENTITY.get(), CookedWholeSheepRenderer::new);
     }
 
     @SubscribeEvent
@@ -179,6 +195,41 @@ public class FlavorImmersedDailyClient {
                 event.getToolTip().add(Component.translatable("tooltip.flavor_immersed_daily.crop_type.farmland")
                         .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
             }
+        }
+    }
+
+    // 鼠标指向木盆且盆内存有屠宰产物时，屏幕左上显示内容物与数量
+    @SubscribeEvent
+    static void onRenderGui(RenderGuiEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.player == null || !(mc.hitResult instanceof BlockHitResult hit)) {
+            return;
+        }
+        BlockState state = mc.level.getBlockState(hit.getBlockPos());
+        if (!(state.getBlock() instanceof WoodBasinBlock)) {
+            return;
+        }
+        if (mc.level.getBlockEntity(hit.getBlockPos()) instanceof WoodBasinBlockEntity be && be.hasStorage()) {
+            renderStorageOverlay(event.getGuiGraphics(), mc, be);
+        }
+    }
+
+    private static void renderStorageOverlay(GuiGraphics g, Minecraft mc, WoodBasinBlockEntity be) {
+        List<ItemStack> stacks = be.getStorageStacks();
+        if (stacks.isEmpty()) return;
+
+        int x = 8;
+        int y = 8;
+        g.drawString(mc.font,
+                Component.translatable("tooltip.flavor_immersed_daily.basin_contents"), x, y, 0xFFFFFF);
+        y += 12;
+
+        for (ItemStack s : stacks) {
+            g.renderFakeItem(s, x, y);
+            g.renderItemDecorations(mc.font, s, x, y);
+            String line = s.getHoverName().getString() + "  x" + s.getCount();
+            g.drawString(mc.font, Component.literal(line), x + 22, y + 5, 0xFFFFFF);
+            y += 20;
         }
     }
 }

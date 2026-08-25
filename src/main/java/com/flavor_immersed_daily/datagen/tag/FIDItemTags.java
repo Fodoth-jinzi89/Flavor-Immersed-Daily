@@ -10,6 +10,9 @@ public final class FIDItemTags {
     public static final TagKey<Item> RADISH = create("radish");
     public static final TagKey<Item> SEASONING = create("seasoning");
     public static final TagKey<Item> SEEDS = create("seeds");
+    public static final TagKey<Item> BLOOD = create("blood");
+    public static final TagKey<Item> CHICKEN = create("chicken");
+    public static final TagKey<Item> MEAT = create("meat");
 
     private FIDItemTags() {
     }

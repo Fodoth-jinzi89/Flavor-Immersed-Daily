@@ -34,6 +34,7 @@
             "Properties": {
               "distance": "1",
               "fruiting": "false",
+              "maturity": "0",
               "persistent": "false",
               "waterlogged": "false"
             }

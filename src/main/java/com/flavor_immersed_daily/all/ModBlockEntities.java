@@ -3,6 +3,7 @@ package com.flavor_immersed_daily.all;
 import com.flavor_immersed_daily.FlavorImmersedDaily;
 import com.flavor_immersed_daily.block.blockentity.BighookBlockEntity;
 import com.flavor_immersed_daily.block.blockentity.ColorfulFireworksBoxBlockEntity;
+import com.flavor_immersed_daily.block.blockentity.CookedWholeSheepBlockEntity;
 import com.flavor_immersed_daily.block.blockentity.CoupletBlockEntity;
 import com.flavor_immersed_daily.block.blockentity.EggBreakingMachineBlockEntity;
 import com.flavor_immersed_daily.block.blockentity.FridgeBlockEntity;
@@ -23,6 +24,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BighookBlockEntity>> BIGHOOK_BE =
             REGISTRY.register("bighook_be",
                     () -> BlockEntityType.Builder.of(BighookBlockEntity::new, ModBlocks.BIGHOOK.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CookedWholeSheepBlockEntity>> COOKED_WHOLE_SHEEP_ENTITY =
+            REGISTRY.register("cooked_whole_sheep_entity",
+                    () -> BlockEntityType.Builder.of(CookedWholeSheepBlockEntity::new, ModBlocks.COOKED_WHOLE_SHEEP.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FridgeBlockEntity>> FRIDGE_ENTITY =
             REGISTRY.register("fridge_entity",
                     () -> BlockEntityType.Builder.of(FridgeBlockEntity::new, ModBlocks.FRIDGE.get()).build(null));

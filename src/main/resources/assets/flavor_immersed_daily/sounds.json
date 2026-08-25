@@ -4,5 +4,11 @@
     "sounds": [
       "flavor_immersed_daily:manbaout"
     ]
+  },
+  "giao": {
+    "subtitle": "subtitles.flavor_immersed_daily.giao",
+    "sounds": [
+      "flavor_immersed_daily:giao"
+    ]
   }
 }

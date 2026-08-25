@@ -23,6 +23,10 @@ public final class ModEffects {
     public static final DeferredHolder<MobEffect, HulkLeekEffect> HULK_LEEK = REGISTRY.register("hulk_leek", HulkLeekEffect::new);
     public static final DeferredHolder<MobEffect, FuryAssaultEffect> FURY_ASSAULT = REGISTRY.register("fury_assault", FuryAssaultEffect::new);
     public static final DeferredHolder<MobEffect, CrimsonMambaEffect> CRIMSON_MAMBA = REGISTRY.register("crimson_mamba", CrimsonMambaEffect::new);
+    public static final DeferredHolder<MobEffect, ExposeEvilEffect> EXPOSE_EVIL = REGISTRY.register("expose_evil", ExposeEvilEffect::new);
+    public static final DeferredHolder<MobEffect, YiDeRoarEffect> YI_DE_ROAR = REGISTRY.register("yi_de_roar", YiDeRoarEffect::new);
+    public static final DeferredHolder<MobEffect, GuanYuStrikeEffect> GUAN_YU_STRIKE = REGISTRY.register("guan_yu_strike", GuanYuStrikeEffect::new);
+    public static final DeferredHolder<MobEffect, AniseedWardEffect> ANISEED_WARD = REGISTRY.register("aniseed_ward", AniseedWardEffect::new);
 
     private ModEffects() {}
 

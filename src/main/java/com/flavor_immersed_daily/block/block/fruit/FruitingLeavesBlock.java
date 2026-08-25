@@ -70,17 +70,20 @@ public class FruitingLeavesBlock extends LeavesBlock {
 
     @Override
     protected boolean isRandomlyTicking(BlockState state) {
-        return super.isRandomlyTicking(state) || (!state.getValue(FRUITING) && !state.getValue(PERSISTENT));
+        // 自然树叶（persistent=false）需要随机刻做距离/枯萎检查；
+        // 未挂果的树叶（含玩家手动放置的 persistent 树叶）需要随机刻自然成熟
+        return !state.getValue(PERSISTENT) || !state.getValue(FRUITING);
     }
 
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        super.randomTick(state, level, pos, random);
+        // 只有非 persistent（自然生成）的树叶参与原版距离/枯萎检查，玩家放置的 persistent 树叶不枯萎
+        if (!state.getValue(PERSISTENT)) {
+            super.randomTick(state, level, pos, random);
+        }
 
         BlockState currentState = level.getBlockState(pos);
-        if (currentState.is(this)
-                && !currentState.getValue(FRUITING)
-                && !currentState.getValue(PERSISTENT)) {
+        if (currentState.is(this) && !currentState.getValue(FRUITING)) {
             tryMatureFruit(level, pos, currentState, random, Config.naturalFruitMaturityChance);
         }
     }

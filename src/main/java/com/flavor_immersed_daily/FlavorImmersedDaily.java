@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Sheep;
@@ -31,12 +33,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -47,6 +51,11 @@ public class FlavorImmersedDaily {
     public static final String MODID = "flavor_immersed_daily";
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final Registrate REGISTRATE = Registrate.create(MODID);
+
+    /** 滚烫的糯米攻击玩家时的 y 轴加速度（猛跳高度） */
+    private static final double HOT_GLUTINOUS_JUMP_SPEED = 1.5;
+    /** 滚烫的糯米攻击生物时附加邪祟暴露效果的时长（tick） */
+    private static final int EXPOSE_EVIL_DURATION_TICKS = 200;
 
     static {
         REGISTRATE.defaultCreativeTab((ResourceKey<CreativeModeTab>) null);
@@ -60,6 +69,7 @@ public class FlavorImmersedDaily {
     public FlavorImmersedDaily(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(ModPayloads::register);
         modEventBus.addListener(com.flavor_immersed_daily.datagen.FIDDataGenerators::gatherData);
+        modEventBus.addListener(this::setupCommon);
 
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
@@ -85,11 +95,37 @@ public class FlavorImmersedDaily {
         FidDebugCommands.register(event.getDispatcher());
     }
 
+    private void setupCommon(FMLCommonSetupEvent event) {
+        // 堆肥能力已在 data/neoforge/data_maps/item/compostables.json 中声明，
+        // 由 NeoForge 的 Compostable datamap 在数据包加载时注册（运行时改 map 会被 bootStrap 覆盖）。
+    }
+
     @SubscribeEvent
     public void onAttackEntity(AttackEntityEvent event) {
         if (!(event.getTarget() instanceof LivingEntity target)) return;
         Player player = event.getEntity();
         ItemStack weapon = player.getMainHandItem();
+
+        // 滚烫的糯米：消耗一个，对生物点燃并附加邪祟暴露，对玩家施加猛跳与惨叫音效
+        if (weapon.is(HOT_GLUTINOUS.get())) {
+            if (!target.level().isClientSide) {
+                weapon.shrink(1);
+                if (target instanceof Player victim) {
+                    Vec3 motion = victim.getDeltaMovement();
+                    victim.setDeltaMovement(motion.x, HOT_GLUTINOUS_JUMP_SPEED, motion.z);
+                    victim.hurtMarked = true;
+                    victim.level().playSound(null, victim.getX(), victim.getY(), victim.getZ(),
+                            ModSounds.GIAO.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                    // 对玩家同样附加邪祟暴露效果
+                    victim.addEffect(new MobEffectInstance(ModEffects.EXPOSE_EVIL, EXPOSE_EVIL_DURATION_TICKS, 0));
+                } else {
+                    target.igniteForSeconds(3);
+                    target.addEffect(new MobEffectInstance(ModEffects.EXPOSE_EVIL, EXPOSE_EVIL_DURATION_TICKS, 0));
+                }
+            }
+            return;
+        }
+
         if (!weapon.is(BONECUTTERKNIFE.get())) return;
 
         Item deadItem = null;
