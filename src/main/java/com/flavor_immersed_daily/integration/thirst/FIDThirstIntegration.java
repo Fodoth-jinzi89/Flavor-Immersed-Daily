@@ -8,8 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 /**
  * Thirst-Was-Reclaimed 口渴值注册集成。
  * 监听 RegisterThirstValueEvent（NeoForge.EVENT_BUS，服务器启动时由口渴模组触发），
- * 为 FID 食物/饮品注册 hydration(口渴值) 与 quenched(解渴值)。
- * 数值见 thirst_value_plan.md 分配表；油炸食品与酒类不补水。
+ * 为 FID 食物/饮品注册 hydration(口渴值) 与 quenched(解渴值)。。
  */
 public class FIDThirstIntegration {
     private FIDThirstIntegration() {
