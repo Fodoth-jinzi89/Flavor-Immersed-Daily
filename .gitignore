@@ -1,48 +1,62 @@
-### Gradle ###
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/**/build/
-
-### IntelliJ IDEA ###
+# IntelliJ / Eclipse / VS Code
 .idea/
+.idea_modules/
 *.iws
 *.iml
 *.ipr
 out/
-!**/src/**/out/
-
-.run/
-
-### Eclipse ###
-.apt_generated
-.classpath
 .eclipse/
-.factorypath
+.classpath
 .project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/**/bin/
-
-### VS Code ###
+.settings/
 .vscode/
 
-### Mac OS ###
-.DS_Store
+# Gradle
+.gradle/
+build/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
 
-### Minecraft Modding ###
+# Minecraft / NeoForge runtime
 run/
-!**/src/**/run/
-**/src/generated/**/.cache/
+runs/
+logs/
+crash-reports/
+saves/
+screenshots/
 repo/
-!**/src/**/repo/
+libraries/
+.minecraft/
 
-### Minecraft Crash Reports ###
-crash-*.txt
-hs_err_pid*.log
+# Generated resources and caches
+src/generated/
+**/src/generated/**/.cache/
+generated/
 
-### Build Logs ###
-build_*.txt
-full_build*.txt
+# Local libraries and runtime assets are intentionally kept
+lib/
+!lib/
+!lib/**
+
+# Environment / local tool data
+.env
+.env.*
+.deepcode/*
+!.deepcode/settings.json.example
+/.mixin.out/
+
+# OS / temporary files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.class
+hs_err_pid*
+replay_pid*
+*.hprof
+*.lck
